@@ -1,32 +1,93 @@
-LOCAL c_nomexml, c_nomefilesign
-c_nomexml= ""
+*================================================================================================================================================
+* GRINCOP LDA
+*      :: Data Criação:    01/07/2021
+*      :: Programador:     João Mendes
+*      :: Cliente:     Ambienti D Interni
+*      :: Objetivo:    Gerar ficheiro XML    
+* Histórico de Versões
+*      :: 06/07/2021 »» JM :: tcfilepdf com Nome do IDU
+*================================================================================================================================================
 
+*msg("GRINCOP - EM DESENVOLVILMENTO")
+*RETURN
 
-*c_nomexml="blablaxml"
-c_nomexml=alltrim(factFE.NOMEDOC)+"-"+astr(factFE.numdoc)+"-"+dtoc(factFE.usrdata)+"-"+substr(factFE.usrhora,1,2)+"h"+substr(factFE.usrhora,4,2)+"m"
+my_data=DATETIME()
+LOCAL my_ftstamp
+my_ftstamp=""
 
-c_nomefilesign = ""
-tcfilepdf = "FaturaAzul"
-*tcfilepdf = ""
+SELECT FT3
+my_ftstamp=ft3.ft3stamp
+local c_nomexml, c_nomefilesign
+m.c_nomexml= ""
+m.c_nomefilesign = ""
+m.tcfilepdf = "DocumentoCertificado"
 makexmlubl_2_1_cius(@c_nomexml, @c_nomefilesign, tcfilepdf, y_tiposaft)
-
-
-
-local my_xml, my_folder
+local my_xml
 my_xml=""
-my_folder=""
 
-my_folder="F:\04-GRINCOP_PHC\"
+*!* Definir qual a pasta no servidor *!*
+LOCAL my_folder
+my_folder=""
+my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\XML\"
+
+LOCAL my_pathXML
+my_pathXML=""
+my_pathXML=alltrim(ft3.u_pathXML)
+*msg(my_pathXML)
+*return
+***************************************************************************************************************
+***************************************************************************************************************
+if !pergunta("Pretende exportar a fatura para ficheiro XML",1,"Este processo pode demorar algum tempo",.T.)
+	msg("Operação cancelada","WAIT")
+	return
+endif
+
+
+IF DIRECTORY(my_folder)
+    msg("Sucesso! Ligação validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
+    msg("O servidor respondeu. Pode exportar a fatura","WAIT")
+ELSE 
+    msg("O servidor não respondeu","WAIT")
+    msg("Algo correu mal... Não foi possível ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
+    return
+ENDIF 
+
+if !empty(my_pathXML)
+    msg("Atenção! Esta fatura já tinha sido exportada para XML"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
+endif
+
+*!*Definir a pasta de destino do XML exportado
+RENAME (c_nomexml) to ("\\192.168.0.11\Dropbox\Dados\FEAP\XML\"+JUSTFNAME(m.c_nomexml))
+
+*****************************************************
+my_pathXML=""
 my_xml=(JUSTFNAME(m.c_nomexml))
 my_pathXML=my_folder+my_xml
-*msg(my_pathXML)
+my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\XML\"
+
 msg("O ficheiro '"+my_xml+"' foi exportado com sucesso para a pasta: '"+my_folder+"'","",.t.)
-msg("Fatura exportada para ficheiro XML com sucesso!","WAIT")
-
-
-
-RENAME (c_nomexml) to (my_folder+JUSTFNAME(m.c_nomexml))
-
-
-
-
+msg("Fatura exportada com sucesso!","WAIT")
+*************************************************************************************************
+*************************************************************************************************
+*******************************UPDATE COM O NOME DO CAMINHO DO XML*******************************
+LOCAL updt_xml
+updt_xml=''
+TEXT TO updt_xml TEXTMERGE NOSHOW
+	UPDATE FT3 SET
+	ft3.u_pathXML='<<my_pathXML>>',
+	ft3.u_lxml=1
+	WHERE	
+	ft3.ft3stamp='<<my_ftstamp>>'
+ENDTEXT
+	
+*msg(updt_xml)
+if u_sqlexec ([BEGIN TRANSACTION])	
+	if u_sqlexec(updt_xml)	
+		u_sqlexec([COMMIT TRANSACTION])	
+	else	
+		u_sqlexec([ROLLBACK])	
+		Messagebox("Erro - updt_xml - p.f. contracte o seu Administrador de Sistema GRINCOP!!")	
+		exit	
+	endif	
+endif	
+************************************************************************************************
