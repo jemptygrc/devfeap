@@ -74,7 +74,9 @@ hora=substr(ft.usrhora,1,2)+"h"+substr(ft.usrhora,4,2)+"m"
 
 m.my_pdf=alltrim(ft.nmdoc)+"-"+astr(ft.fno)+"-"+dtoc(ft.usrdata)+"-"+hora
 m.cDir=my_folder+my_pdf+".pdf" 
-msg(m.cDir)
+
+*msg(m.cDir)
+msg(m.my_pdf)
 
 idutopdf("FT","FI","FTCAMPOS","FICAMPOS","FTIDUC","FTIDUL",FT.ndoc,m.cTitIDU,m.cDir,"","NO",.F.,"ONETOMANY",,,,,.T.)
 msg("Ficheiro PDF exportado com sucesso!","WAIT")
@@ -87,21 +89,22 @@ local c_nomexml, c_nomefilesign
 m.c_nomexml= ""
 m.c_nomefilesign = ""
 m.tcfilepdf = m.cDir
+m.cDirXML=my_folder+my_pdf+".xml" 
 makexmlubl_2_1_cius(@c_nomexml, @c_nomefilesign, tcfilepdf, y_tiposaft)
 
 *!*Definir a pasta de destino do XML exportado
-*RENAME (c_nomexml) to ("F:\04-GRINCOP_PHC\"+JUSTFNAME(m.c_nomexml))
-RENAME (c_nomexml) to (my_folder+JUSTFNAME(m.c_nomexml))
+**RENAME (c_nomexml) to ("F:\04-GRINCOP_PHC\"+JUSTFNAME(m.c_nomexml))
+*RENAME (c_nomexml) to (my_folder+JUSTFNAME(m.c_nomexml))
+RENAME (c_nomexml) to (m.cDirXML)
 
 
 *****************************************************
 my_pathXML=""
-my_xml=(JUSTFNAME(m.c_nomexml))
-my_pathXML=my_folder+my_xml
+my_pathXML=m.cDirXML
 *my_folder="F:\04-GRINCOP_PHC\"
 my_folder="\\10.0.0.13\Dados\04-GRINCOP_PHC"
 
-msg("O ficheiro '"+my_xml+"' foi exportado com sucesso para a pasta: '"+my_folder+"'","",.t.)
+msg("O ficheiro '"+m.cDirXML+"' foi exportado com sucesso para a pasta: '"+my_folder+"'","",.t.)
 msg("Fatura exportada com sucesso!","WAIT")
 
 *************************************************************************************************

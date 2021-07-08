@@ -5,7 +5,7 @@
 *      :: Cliente:     Ambienti D Interni
 *      :: Objetivo:    Gerar ficheiro XML    
 * Histórico de Versões
-*      :: 08/07/2021 »» JM :: Gerar pdf para incluir na variavel tcfile no XML
+*      :: 08/07/2021 »» JM :: Gerar pdf para incluir na variavel tcfile no XML e atribuir nome ao XML 
 *================================================================================================================================================
 
 *msg("GRINCOP - EM DESENVOLVILMENTO")
@@ -73,15 +73,14 @@ local c_nomexml, c_nomefilesign
 m.c_nomexml= ""
 m.c_nomefilesign = ""
 m.tcfilepdf = m.cDir
+m.cDirXML=my_folder+my_pdf+".xml" 
 makexmlubl_2_1_cius(@c_nomexml, @c_nomefilesign, tcfilepdf, y_tiposaft)
-local my_xml
-my_xml=""
 
 
 *!*Definir a pasta de destino do XML exportado
-RENAME (c_nomexml) to (my_folder+JUSTFNAME(m.c_nomexml))
+RENAME (c_nomexml) to (m.cDirXML)
 
-msg("O ficheiro '"+my_xml+"' foi exportado com sucesso para a pasta: '"+my_folder+"'","",.t.)
+msg("O ficheiro '"+m.cDirXML+"' foi exportado com sucesso para a pasta: '"+my_folder+"'","",.t.)
 msg("FIcheiro XML exportado com sucesso!","WAIT")
 
 
@@ -89,8 +88,7 @@ msg("FIcheiro XML exportado com sucesso!","WAIT")
 *************************************************************************************************
 *******************************UPDATE COM O NOME DO CAMINHO DO XML*******************************
 my_pathXML=""
-my_xml=(JUSTFNAME(m.c_nomexml))
-my_pathXML=my_folder+my_xml
+my_pathXML=m.cDirXML
 
 LOCAL updt_xml
 updt_xml=''
