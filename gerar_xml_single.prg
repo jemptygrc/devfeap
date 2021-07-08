@@ -1,8 +1,13 @@
-****Titulo: Exportar XML 
-****Cliente: AMBIENTI
-****Data: 22/04/2021
-****Ultima alteracao 29/06/2021
-************************************************
+*================================================================================================================================================
+* GRINCOP LDA
+*      :: Data Criação:    08/07/2021
+*      :: Programador:     João Mendes
+*      :: Cliente:     Ambienti D Interni
+*      :: Objetivo:     TESTES DE XML COM PDF INCLUIDO   
+* Histórico de Versões
+*      :: 08/07/2021 »» JM :: Alteracao TCFilepdf
+*================================================================================================================================================
+
 
 my_data=DATETIME()
 
@@ -13,11 +18,11 @@ my_ftstamp=""
 SELECT FT3
 my_ftstamp=ft3.ft3stamp
 
-local c_nomexml, c_nomefilesign
-m.c_nomexml= ""
-m.c_nomefilesign = ""
-m.tcfilepdf = ""
-makexmlubl_2_1_cius(@c_nomexml, @c_nomefilesign, tcfilepdf, y_tiposaft)
+*********************************************************************************************************
+
+
+
+
 
 local my_xml
 my_xml=""
@@ -33,6 +38,9 @@ my_pathXML=""
 my_pathXML=alltrim(ft3.u_pathXML)
 *msg(my_pathXML)
 *return
+
+
+
 ***************************************************************************************************************
 ***************************************************************************************************************
 if !pergunta("Pretende exportar a fatura para ficheiro XML",1,"Este processo pode demorar algum tempo",.T.)
@@ -56,6 +64,31 @@ ENDIF
 if !empty(my_pathXML)
     msg("Atenção! Esta fatura já tinha sido exportada para XML"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
 endif
+
+
+**********************************************************************************************************
+**********************************************************************************************************
+***********************************************GERAR O PDF************************************************
+m.cTitIDU = "FaturaAzul" 
+hora=substr(ft.usrhora,1,2)+"h"+substr(ft.usrhora,4,2)+"m" 
+
+m.my_pdf=alltrim(ft.nmdoc)+"-"+astr(ft.fno)+"-"+dtoc(ft.usrdata)+"-"+hora
+m.cDir=my_folder+my_pdf+".pdf" 
+msg(m.cDir)
+
+idutopdf("FT","FI","FTCAMPOS","FICAMPOS","FTIDUC","FTIDUL",FT.ndoc,m.cTitIDU,m.cDir,"","NO",.F.,"ONETOMANY",,,,,.T.)
+msg("Ficheiro PDF exportado com sucesso!","WAIT")
+
+
+**********************************************************************************************************
+**********************************************************************************************************
+***********************************************GERAR O XML************************************************
+local c_nomexml, c_nomefilesign
+m.c_nomexml= ""
+m.c_nomefilesign = ""
+m.tcfilepdf = m.cDir
+makexmlubl_2_1_cius(@c_nomexml, @c_nomefilesign, tcfilepdf, y_tiposaft)
+
 *!*Definir a pasta de destino do XML exportado
 *RENAME (c_nomexml) to ("F:\04-GRINCOP_PHC\"+JUSTFNAME(m.c_nomexml))
 RENAME (c_nomexml) to ("\\10.0.0.13\Dados\04-GRINCOP_PHC\"+JUSTFNAME(m.c_nomexml))
