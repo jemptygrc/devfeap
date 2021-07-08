@@ -91,7 +91,7 @@ makexmlubl_2_1_cius(@c_nomexml, @c_nomefilesign, tcfilepdf, y_tiposaft)
 
 *!*Definir a pasta de destino do XML exportado
 *RENAME (c_nomexml) to ("F:\04-GRINCOP_PHC\"+JUSTFNAME(m.c_nomexml))
-RENAME (c_nomexml) to ("\\10.0.0.13\Dados\04-GRINCOP_PHC\"+JUSTFNAME(m.c_nomexml))
+RENAME (c_nomexml) to (my_folder+JUSTFNAME(m.c_nomexml))
 
 
 *****************************************************

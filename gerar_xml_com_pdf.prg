@@ -5,7 +5,7 @@
 *      :: Cliente:     Ambienti D Interni
 *      :: Objetivo:    Gerar ficheiro XML    
 * Histórico de Versões
-*      :: 06/07/2021 »» JM :: tcfilepdf com Nome do IDU
+*      :: 08/07/2021 »» JM :: Gerar pdf para incluir na variavel tcfile no XML
 *================================================================================================================================================
 
 *msg("GRINCOP - EM DESENVOLVILMENTO")
@@ -17,13 +17,7 @@ my_ftstamp=""
 
 SELECT FT3
 my_ftstamp=ft3.ft3stamp
-local c_nomexml, c_nomefilesign
-m.c_nomexml= ""
-m.c_nomefilesign = ""
-m.tcfilepdf = "DocumentoCertificado"
-makexmlubl_2_1_cius(@c_nomexml, @c_nomefilesign, tcfilepdf, y_tiposaft)
-local my_xml
-my_xml=""
+
 
 *!* Definir qual a pasta no servidor *!*
 LOCAL my_folder
@@ -35,6 +29,8 @@ my_pathXML=""
 my_pathXML=alltrim(ft3.u_pathXML)
 *msg(my_pathXML)
 *return
+
+
 ***************************************************************************************************************
 ***************************************************************************************************************
 if !pergunta("Pretende exportar a fatura para ficheiro XML",1,"Este processo pode demorar algum tempo",.T.)
@@ -45,7 +41,7 @@ endif
 
 IF DIRECTORY(my_folder)
     msg("Sucesso! Ligação validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
-    msg("O servidor respondeu. Pode exportar a fatura","WAIT")
+    msg("O servidor respondeu. A exportar a fatura, aguarde mais um momento","WAIT")
 ELSE 
     msg("O servidor não respondeu","WAIT")
     msg("Algo correu mal... Não foi possível ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
@@ -56,20 +52,46 @@ if !empty(my_pathXML)
     msg("Atenção! Esta fatura já tinha sido exportada para XML"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
 endif
 
-*!*Definir a pasta de destino do XML exportado
-RENAME (c_nomexml) to ("\\192.168.0.11\Dropbox\Dados\FEAP\XML\"+JUSTFNAME(m.c_nomexml))
 
-*****************************************************
-my_pathXML=""
-my_xml=(JUSTFNAME(m.c_nomexml))
-my_pathXML=my_folder+my_xml
-my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\XML\"
+**********************************************************************************************************
+**********************************************************************************************************
+***********************************************GERAR O PDF************************************************
+m.cTitIDU = "DocumentoCertificado" 
+hora=substr(ft.usrhora,1,2)+"h"+substr(ft.usrhora,4,2)+"m" 
+
+m.my_pdf=alltrim(ft.nmdoc)+"-"+astr(ft.fno)+"-"+dtoc(ft.usrdata)+"-"+hora
+m.cDir=my_folder+my_pdf+".pdf" 
+*msg(m.cDir)
+
+idutopdf("FT","FI","FTCAMPOS","FICAMPOS","FTIDUC","FTIDUL",FT.ndoc,m.cTitIDU,m.cDir,"","NO",.F.,"ONETOMANY",,,,,.T.)
+msg("Ficheiro PDF exportado com sucesso!","WAIT")
+
+**********************************************************************************************************
+**********************************************************************************************************
+***********************************************GERAR O XML************************************************
+local c_nomexml, c_nomefilesign
+m.c_nomexml= ""
+m.c_nomefilesign = ""
+m.tcfilepdf = m.cDir
+makexmlubl_2_1_cius(@c_nomexml, @c_nomefilesign, tcfilepdf, y_tiposaft)
+local my_xml
+my_xml=""
+
+
+*!*Definir a pasta de destino do XML exportado
+RENAME (c_nomexml) to (my_folder+JUSTFNAME(m.c_nomexml))
 
 msg("O ficheiro '"+my_xml+"' foi exportado com sucesso para a pasta: '"+my_folder+"'","",.t.)
-msg("Fatura exportada com sucesso!","WAIT")
+msg("FIcheiro XML exportado com sucesso!","WAIT")
+
+
 *************************************************************************************************
 *************************************************************************************************
 *******************************UPDATE COM O NOME DO CAMINHO DO XML*******************************
+my_pathXML=""
+my_xml=(JUSTFNAME(m.c_nomexml))
+my_pathXML=my_folder+my_xml
+
 LOCAL updt_xml
 updt_xml=''
 TEXT TO updt_xml TEXTMERGE NOSHOW
@@ -90,4 +112,5 @@ if u_sqlexec ([BEGIN TRANSACTION])
 		exit	
 	endif	
 endif	
+************************************************************************************************
 ************************************************************************************************
