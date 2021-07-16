@@ -5,7 +5,7 @@
 *      :: Cliente:     AMBIENTI D INTERNI
 *      :: Objetivo:    Enviar PDFs com assinatura eletronica de seguida    
 * Histórico de Versões
-*      :: 06/07/2021 »» JM :: Retirar mensagens
+*      :: 06/07/2021 »» JM :: Registo Log File
 *================================================================================================================================================
 
 
@@ -47,6 +47,10 @@ nifEmpresa="PT508369444"
 LOCAL my_folder
 my_folder=""
 my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\PDFs\"
+
+LOCAL my_folderLog
+my_folderLog=""
+my_folderLog="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LPDF\"
 ********************************************************************************************
 ********************************************************************************************
 ********************************************************************************************
@@ -227,9 +231,11 @@ RELEASE loFac
 	if u_sqlexec ([BEGIN TRANSACTION])
 		if u_sqlexec(updt_base)
 			u_sqlexec([COMMIT TRANSACTION])
+			StrToFile(updt_base,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Sucesso_Update_Base64.txt",4)
 		else	
 			u_sqlexec([ROLLBACK])
 			msg("Erro - updt_base - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
+			StrToFile(updt_base,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Erro_Update_Base64.txt",4)
 			Gowww("https://www.grincop.pt/contactos/")
 			exit
 		endif
@@ -343,6 +349,9 @@ if isValid="false"
 	errorCodeResultado=(errorCodeFinal)-(errorCodeInicial)
 	errorCode=SUBSTR(my_response3,errorCodeInicial,errorCodeResultado)
 	*messagebox(errorCode,"errorCode")
+
+	StrToFile(errorCode,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Erro_Enviar.txt",4)
+
 DO CASE
 CASE errorCode = "INVALID_INTL_VAT_CODE"
 	msg("NIF inválido na fatura: «"+astr(numFact)+"» "+chr(13)+chr(10)+"Por favor verifique se o cliente: «"+astr(cliente)+"» tem o NIF bem preenchido (Ex: PT123456789)","FORM")
@@ -416,7 +425,7 @@ DO WHILE asyncStatus!="Finished"
 **************************************
 	IF asyncStatus="Running"
 		nrTentativas=nrTentativas+1
-		msg("Tentativa: "+astr(nrTentativas)+" de 5")
+		msg("Tentativa: "+astr(nrTentativas)+" de 10")
 		DO ProcAtualizaEstado
 		asyncStatus=""
 		**************************************
@@ -438,11 +447,14 @@ DO WHILE asyncStatus!="Finished"
 		asyncStatus=LEFT(status,teste2)
 		*messagebox("asyncStatus")
 		*msg(asyncStatus)
-		If nrTentativas=5
+		If nrTentativas=10
 			msg("Algo correu mal... Erro de comunicação e excesso de tentativas, tente novamente mais tarde")
+			StrToFile(asyncStatus,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-tentativas.txt",4)
+			EXIT
 			RETURN
 		Endif
 	ENDIF
+
 	errorCodeAsyncInicial=0
 	errorCodeAsyncFinal=0
 	errorCodeAsyncResultado=0
@@ -452,7 +464,9 @@ DO WHILE asyncStatus!="Finished"
 	errorCodeAsyncResultado=(len(errorCodeAsyncInicial)-len(errorCodeAsyncFinal))
 	errorCodeAsync=LEFT(errorCodeAsyncInicial,errorCodeAsyncResultado)
 	msg(errorCodeAsync)
+
 	IF asyncStatus="Error"
+	StrToFile(errorCodeAsync,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-errorCodeAsync.txt",4)
 	*MSG("OLA CONDICAO ASYNCSTATUS = ERROR E ERROR CODE")
 	*MSG(errorCodeAsync)
 	DO CASE
@@ -494,6 +508,7 @@ If asyncStatus="Finished"
 	my_outbound_resultado=my_outbound_final-my_outbound_inicial
 	my_outbound=SUBSTR(my_response_service,my_outbound_inicial,my_outbound_resultado)
 	*msg(my_outbound)
+	StrToFile(my_outbound,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Sucesso_outbound.txt",4)
 
 	**SerializedInput
 	*LOCAL my_serialized_inicial,my_serialized_final
@@ -569,6 +584,8 @@ documentLink_Inicial=(AT('Link',my_response_service))+7
 documentLink_Final=AT('}]}',my_response_service)-1
 documentLink_Resultado=(documentLink_Final)-(documentLink_Inicial)
 documentLink=SUBSTR(my_response_service,documentLink_Inicial,documentLink_Resultado)
+StrToFile(documentLink,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Sucesso_documentLink.txt",4)
+
 *msg(documentLink)
 ****************************************************
 ***CHAMADA AO PROCEDIMENTO PARA GUARDAR LINK NA FT3
@@ -640,14 +657,18 @@ IF isValidEmail="false"
 	errorCodeEmail_Final=AT('Field',request_data)-3
 	errorCodeEmail_Resultado=errorCodeEmail_Final-errorCodeEmail_Inicial
 	errorCodeEmail=SUBSTR(request_data,errorCodeEmail_Inicial,errorCodeEmail_Resultado)
+	StrToFile(errorCodeEmail,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Erro_errorCodeEmail.txt",4)
 	*msg(errorCodeEmail)
+
 	DO CASE
 	CASE errorCodeEmail = "INVALID_EMAIL"
 		msg("Atenção! A fatura: «"+astr(numFact)+"» não foi enviada! O e-mail do cliente: «"+alltrim(cliente)+"» está preenchido incorretamente."+chr(13)+chr(10)+" Por favor verifique a ficha de cliente.","FORM")
+		EXIT
 		return
 	OTHERWISE
 		msg("Erro desconhecido no envio de e-mail! Por favor contate o Administrador de sistema GRINCOP")
 		Gowww("https://www.grincop.pt/contactos/")
+		EXIT
 		return
 	ENDCASE
 ENDIF
@@ -691,9 +712,12 @@ PROCEDURE ProcAtualizaEstado
 	if u_sqlexec ([BEGIN TRANSACTION])
 		if u_sqlexec(updt_status)
 			u_sqlexec([COMMIT TRANSACTION])
+			StrToFile(updt_status,my_folderLog+my_ftstamp+"-Sucesso_updt_status.txt",4)
+
 		else	
 			u_sqlexec([ROLLBACK])
 			msg("Erro - updt_status - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
+			StrToFile(updt_status,my_folderLog+my_ftstamp+"-Erro_updt_status.txt",4)
 			Gowww("https://www.grincop.pt/contactos/")
 			exit
 		endif
@@ -716,9 +740,11 @@ PROCEDURE ProcSaveOutbound
 	if u_sqlexec ([BEGIN TRANSACTION])
 		if u_sqlexec(updt_out)
 			u_sqlexec([COMMIT TRANSACTION])
+			StrToFile(updt_status,my_folderLog+my_ftstamp+"-Sucesso_updt_out.txt",4)
 		else	
 			u_sqlexec([ROLLBACK])
 			msg("Erro - updt_out - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
+			StrToFile(updt_status,my_folderLog+my_ftstamp+"-Erro_updt_out.txt",4)
 			Gowww("https://www.grincop.pt/contactos/")
 			exit
 		endif
@@ -739,6 +765,7 @@ PROCEDURE ProcSaveLink
 	if u_sqlexec ([BEGIN TRANSACTION])
 		if u_sqlexec(updt_linkpdf)
 			u_sqlexec([COMMIT TRANSACTION])
+			StrToFile(updt_status,my_folderLog+my_ftstamp+"-Erro_updt_status.txt",4)
 		else	
 			u_sqlexec([ROLLBACK])
 			msg("Erro - updt_linkpdf - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
