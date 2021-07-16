@@ -5,7 +5,7 @@
 *      :: Cliente:     Ambienti
 *      :: Objetivo:    Enviar XML     
 * Histórico de Versões
-*      :: 05/07/2021 »» JM :: Alteração formatação XML
+*      :: 16/07/2021 »» JM :: Registo Logfile
 *================================================================================================================================================
 
 
@@ -21,7 +21,7 @@ PRIVATE nomeCliente
 PRIVATE nomeDoc
 PRIVATE my_outbound
 PRIVATE my_ftstamp
-PRIVATE errorCode
+PRIVATE my_errorCode
 my_ftstamp=""
 my_pathXML=""
 numFact=0
@@ -35,11 +35,17 @@ SELECT FT
 SELECT FT3
 my_ftstamp=alltrim(ft.ftstamp)
 my_pathXML=alltrim(ft3.u_pathXML)
-numFact=FT.FNO         
+numFact=astr(FT.FNO)       
 nomeDoc=alltrim(FT.NMDOC)
 nomeCliente=alltrim(FT.NOME)
 numCliente=ft.NO
 numEstab=ft.ESTAB
+
+
+*!* Definir qual a pasta no servidor *!*
+LOCAL my_folder
+my_folder=""
+my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LXML\"
 
 *************************************************************************************************************************
 *************************************************************************************************************************
@@ -229,11 +235,11 @@ endif
 	errorCodeInicial=0
 	errorCodeFinal=0
 	errorCodeResultado=0
-	errorCode=""
+	my_errorCode=""
 	errorCodeInicial=AT('{"Code',responseRequestStatus)+9
 	errorCodeFinal=AT('Field',responseRequestStatus)-3
 	errorCodeResultado=(errorCodeFinal)-(errorCodeInicial)
-	errorCode=SUBSTR(responseRequestStatus,errorCodeInicial,errorCodeResultado)
+	my_errorCode=SUBSTR(responseRequestStatus,errorCodeInicial,errorCodeResultado)
 	*messagebox("ola errorCode")
 	*msg(errorCode)
 	****CHAMADA AO PROCEDIMENTO PARA VALIDAR ERROS
@@ -263,7 +269,7 @@ endif
 	**************************************
 		IF asyncStatus="Running"
 			nrTentativas=nrTentativas+1
-			msg("Tentativa: "+astr(nrTentativas)+" de 5")
+			msg("Tentativa: "+astr(nrTentativas)+" de 10")
 			*DO ProcAtualizaEstado
 			asyncStatus=""
 			**************************************
@@ -284,10 +290,12 @@ endif
 			msg("Estado do seu pedido: «"+asyncStatus+"»"+chr(13)+chr(10)+chr(13)+chr(10)+"Clique na tecla OK para continuar.")
 			*messagebox("asyncStatus")
 			*msg(asyncStatus)
-			
-			If nrTentativas=5
+			StrToFile(asyncStatus, my_folder+nomeDoc+"-"+numFact+"-"+astr(nrTentativas)+"-tentativas.txt",4)
+
+			If nrTentativas=10
 				msg("Algo correu mal... Erro de comunicação e excesso de tentativas, tente novamente mais tarde")
-			RETURN
+				EXIT
+				RETURN
 			Endif
 		ENDIF
 	
@@ -295,7 +303,69 @@ endif
 			errorCodeInicial=AT('{"Code',responseRequestStatus)+9
 			errorCodeFinal=AT('Field',responseRequestStatus)-3
 			errorCodeResultado=(errorCodeFinal)-(errorCodeInicial)
-			errorCode=SUBSTR(responseRequestStatus,errorCodeInicial,errorCodeResultado)
+			my_errorCode=SUBSTR(responseRequestStatus,errorCodeInicial,errorCodeResultado)
+
+			Create Cursor curs_err1 (nome c(250), errorCode c(250), cliente c(250), factno N(10), factNome c(250))
+			SELECT curs_err1
+			GO TOP
+			Append Blank
+			Replace curs_err1.nome with "Erro nº1"
+			Replace curs_err1.ErrorCode with alltrim(my_errorCode)
+			Replace curs_err1.cliente with alltrim(nomeCliente)
+			Replace curs_err1.factno with alltrim(numFact)
+			Replace curs_err1.factNome with alltrim(nomeDoc)
+
+			LOCAL i
+			i=5
+			declare list_tit(i),list_cam(i),list_pic(i),list_tam(i),list_ali(i),list_ronly(i),list_combo(i)
+			*SELECT curs_err1
+			i=0
+			i=i+1
+			list_tit(i) = "Erro"
+			list_cam(i) = "curs_err1.nome"
+			list_pic(i) = ""
+			list_ali(i) = 0
+			list_ronly(i)=.t.
+			list_combo(i)=""
+
+			i=i+1
+			list_tit(i) = "Descrição do Erro"
+			list_cam(i) = "curs_err1.errorCode"
+			list_pic(i) = ""
+			list_ali(i) = 0
+			list_ronly(i)=.t.
+			list_combo(i)=""
+
+			i=i+1
+			list_tit(i) = "Nm Fatura"
+			list_cam(i) = "curs_err1.factNome"
+			list_pic(i) = ""
+			list_ali(i) = 0
+			list_ronly(i)=.t.
+			list_combo(i)=""
+
+			i=i+1
+			list_tit(i) = "Nº Fatura"
+			list_cam(i) = "curs_err1.factno"
+			list_pic(i) = ""
+			list_ali(i) = 0
+			list_ronly(i)=.t.
+			list_combo(i)=""
+
+			i=i+1
+			list_tit(i) = "Nome Cliente"
+			list_cam(i) = "curs_err1.cliente"
+			list_pic(i) = ""
+			list_ali(i) = 0
+			list_ronly(i)=.t.
+			list_combo(i)=""
+
+			list_tam=15*10
+			****************************
+			m.escolheu=.f.
+			=CURSORSETPROP('Buffering',5,"curs_err1")
+			browlist("ALERTA GRINCOP ","curs_err1","curs_err1")
+			StrToFile(my_errorCode, my_folder+nomeDoc+"-"+numFact+"-erroEstado.txt",4)
 			msg("Atenção! O documento «"+nomeDoc+" "+astr(numFact)+"» do cliente: «"+nomeCliente+"» tem erros que devem ser corrigidos")
 			****CHAMADA AO PROCEDIMENTO PARA VALIDAR ERROS
 			DO ProcValidaErros
@@ -312,7 +382,6 @@ endif
 	*my_IntegratedURL="https://dcn-solution.saphety.com/Dcn.Sandbox.WebApi/api/CompanyConnections/destinations/TRUSTED"
 
 	*!*PRODUCAO
-	my_IntegratedURL="https://dcn-solution.saphety.com/Dcn.Business.WebApi/api/CompanyConnections/destinations/TRUSTED"
     my_IntegratedURL="https://dcn-solution.saphety.com/Dcn.Business.WebApi/api/CompanyConnections/destinations/"+nifCompletoCliente
 
 
@@ -343,6 +412,7 @@ endif
 		my_outbound_final=AT('IntlVatCode',responseRequestStatus)-3
 		my_outbound_resultado=my_outbound_final-my_outbound_inicial
 		my_outbound=SUBSTR(responseRequestStatus,my_outbound_inicial,my_outbound_resultado)
+		StrToFile(my_outbound, my_folder+nomeDoc+"-"+numFact+"-outbound.txt",4)
 		*msg(my_outbound)
 		**************************************************************************
 		***CHAMADA AO PROCEDIMENTO PARA GUARDAR OUTBOUND FINANCIAL DOCUMENT ID NA FT3
@@ -382,6 +452,7 @@ PROCEDURE ProcSaveOutbound
 			exit
 		endif
 	endif
+	StrToFile(updt_out, my_folder+nomeDoc+"-"+numFact+"-upd_out.txt",4)
 ENDPROC
 
 ***********************************************************************************************
@@ -389,49 +460,49 @@ ENDPROC
 PROCEDURE ProcValidaErros
 *messagebox("OLA ENTREI NO PROCEDURE ProcValidaErros")
 DO CASE
-	CASE errorCode = "COUNTRY_LEGAL_FORMAT_NOT_RECOGNIZED"
+	CASE my_errorCode = "COUNTRY_LEGAL_FORMAT_NOT_RECOGNIZED"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"«COUNTRY_LEGAL_FORMAT_NOT_RECOGNIZED» Formato inválido do ficheiro XML no documento: «"+nomeDoc+" "+astr(numFact)+"» Por favor verifique se o cliente: «"+astr(nomeCliente)+"» tem o NIF bem preenchido (Ex: PT123456789)","FORM")
 		return
-	CASE errorCode = "DATETIME_FORMAT_EXPECTED"
+	CASE my_errorCode = "DATETIME_FORMAT_EXPECTED"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"DATA inválida no documento: «"+nomeDoc+" "+astr(numFact)+"» Por favor abra o último registo no ecrã das faturas","FORM")
 		return
-	CASE errorCode = "NO_DESTINATION_INTEGRATION_DEFINED"
+	CASE my_errorCode = "NO_DESTINATION_INTEGRATION_DEFINED"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"O emissor do documento: «"+nomeDoc+" "+astr(numFact)+"» pertence a outra rede e não há ligações de integração definidas entre o emissor e o receptor.","FORM")
 		return
-	CASE errorCode = "FEATURE_UNAVAILABLE_FOR_COMPANY"
+	CASE my_errorCode = "FEATURE_UNAVAILABLE_FOR_COMPANY"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Esta funcionalidade não está disponível para a sua empresa","FORM")
 		return
-	CASE errorCode = "BE-CIUS-PT-05"
+	CASE my_errorCode = "BE-CIUS-PT-05"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Impossível obter o emissor."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return	
-	CASE errorCode = "BE-CIUS-PT-06"
+	CASE my_errorCode = "BE-CIUS-PT-06"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Impossível obter o recetor."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
-	CASE errorCode = "BE-CIUS-PT-07"
+	CASE my_errorCode = "BE-CIUS-PT-07"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Impossível processar o conteudo do documento."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
-	CASE errorCode = "BR-CIUS-PT-66"
+	CASE my_errorCode = "BR-CIUS-PT-66"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Por favor verifique se o documento: «"+nomeDoc+" "+astr(numFact)+"» tem o Local de Descarga preenchido com a morada." +chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
-	CASE errorCode = "BR-CIUS-PT-67"
+	CASE my_errorCode = "BR-CIUS-PT-67"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"O conteudo fornecido como PDF não está convertido para o formato válido"+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
-	CASE errorCode = "BR-CIUS-PT-68"
+	CASE my_errorCode = "BR-CIUS-PT-68"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"O endereço de email não é válido."+chr(13)+chr(10)+chr(13)+"Use um endereço de email válido como <alguem@grincop.pt>"+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
-	CASE errorCode = "BR-CIUS-PT-69"
+	CASE my_errorCode = "BR-CIUS-PT-69"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"A Data de vencimento é obrigatória."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
-	CASE errorCode = "BR-CIUS-PT-70"
+	CASE my_errorCode = "BR-CIUS-PT-70"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Percentagem de imposto aplicada ao desconto é obrigatória."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
-	CASE errorCode = "BR-CIUS-PT-71"
+	CASE my_errorCode = "BR-CIUS-PT-71"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Percentagem de imposto aplicada ao encargo é obrigatória."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
-	CASE errorCode = "BR-CIUS-PT-72"
+	CASE my_errorCode = "BR-CIUS-PT-72"
 		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"IBAN inválido"+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
-	CASE empty(errorCode)
+	CASE empty(my_errorCode)
 		msg("Sem erros! Em processamento...","TRADUZIR")
 OTHERWISE
 		msg("Erro desconhecido! Por favor contacte o administrador de sistema GRINCOP com a seguinte informação: "+chr(13)+chr(10)+chr(13)+chr(10)+errorCode)

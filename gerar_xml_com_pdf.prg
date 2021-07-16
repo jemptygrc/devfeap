@@ -5,7 +5,7 @@
 *      :: Cliente:     Ambienti D Interni
 *      :: Objetivo:    Gerar ficheiro XML    
 * Histórico de Versões
-*      :: 08/07/2021 »» JM :: Gerar pdf para incluir na variavel tcfile no XML e atribuir nome ao XML 
+*      :: 16/07/2021 »» JM :: Registo Log File
 *================================================================================================================================================
 
 *msg("GRINCOP - EM DESENVOLVILMENTO")
@@ -23,6 +23,10 @@ my_ftstamp=ft3.ft3stamp
 LOCAL my_folder
 my_folder=""
 my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\XML\"
+
+LOCAL my_folderLog
+my_folderLog=""
+my_folderLog="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LXML\"
 
 LOCAL my_pathXML
 my_pathXML=""
@@ -60,6 +64,7 @@ m.cTitIDU = "DocumentoCertificado"
 hora=substr(ft.usrhora,1,2)+"h"+substr(ft.usrhora,4,2)+"m" 
 
 m.my_pdf=alltrim(ft.nmdoc)+"-"+astr(ft.fno)+"-"+dtoc(ft.usrdata)+"-"+hora
+
 m.cDir=my_folder+my_pdf+".pdf" 
 *msg(m.cDir)
 
@@ -84,6 +89,8 @@ msg("O ficheiro '"+m.cDirXML+"' foi exportado com sucesso para a pasta: '"+my_fo
 msg("FIcheiro XML exportado com sucesso!","WAIT")
 
 
+StrToFile("XML Exportado", my_folderLog+alltrim(ft.nmdoc)+"-"+astr(ft.fno)+"-"+dtoc(ft.usrdata)+"-"+hora+"-XML_Exportado.txt",4)
+
 *************************************************************************************************
 *************************************************************************************************
 *******************************UPDATE COM O NOME DO CAMINHO DO XML*******************************
@@ -96,7 +103,7 @@ TEXT TO updt_xml TEXTMERGE NOSHOW
 	UPDATE FT3 SET
 	ft3.u_pathXML='<<my_pathXML>>',
 	ft3.u_lxml=1
-	WHERE	
+	WHERE
 	ft3.ft3stamp='<<my_ftstamp>>'
 ENDTEXT
 	
@@ -104,9 +111,12 @@ ENDTEXT
 if u_sqlexec ([BEGIN TRANSACTION])	
 	if u_sqlexec(updt_xml)	
 		u_sqlexec([COMMIT TRANSACTION])	
+		StrToFile(updt_xml, my_folderLog+alltrim(ft.nmdoc)+"-"+astr(ft.fno)+"-"+dtoc(ft.usrdata)+"-"+hora+"-Sucesso_Updt_XML.txt",4)	
+
 	else	
 		u_sqlexec([ROLLBACK])	
-		Messagebox("Erro - updt_xml - p.f. contracte o seu Administrador de Sistema GRINCOP!!")	
+		Messagebox("Erro - updt_xml - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
+		StrToFile(updt_xml, my_folderLog+alltrim(ft.nmdoc)+"-"+astr(ft.fno)+"-"+dtoc(ft.usrdata)+"-"+hora+"-Erro_Updt_XML.txt",4)	
 		exit	
 	endif	
 endif	

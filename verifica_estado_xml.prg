@@ -5,8 +5,15 @@
 *      :: Cliente:     AMBIENTI D INTERNI
 *      :: Objetivo:    Verifica estado do XML assinado eletronicamente    
 * Histórico de Versões
-*      :: 16/07/2021 »» JM :: VERIFICAR ERRO EXPECTED_DATA_NOT_FOUND
+*      :: 16/07/2021 »» JM :: Registo de log
 *================================================================================================================================================
+
+*!* Definir qual a pasta no servidor *!*
+LOCAL my_folder
+my_folder=""
+my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LXML\"
+
+************************************************************************************************
 
 
 *CHECK INVOICE STATUS PRODUCAO
@@ -57,8 +64,16 @@ msg(my_token)
 ************************************************************************************************
 ************************************************************************************************
 ****2. Get a Document storage by DocumentId 
-LOCAL my_outbound
+SELECT FT
+LOCAL nomeDoc, numFact
+nomeDoc=""
+numFact=0
+nomeDoc=alltrim(ft.Nmdoc)
+numFact=astr(ft.Fno)
+
+
 SELECT ft3
+LOCAL my_outbound
 my_outbound=alltrim(ft3.u_OUTBOUND)
 *Parametros JSON para envio à API
 TEXT TO payload TEXTMERGE NOSHOW
@@ -113,8 +128,8 @@ my_integration_inicial=AT('IntegrationStatus',my_response)+20
 my_integration_final=AT('IntegrationDate',my_response)-3
 my_integration_resultado=my_integration_final-my_integration_inicial
 my_integration=SUBSTR(my_response,my_integration_inicial,my_integration_resultado)
-messagebox(my_integration)
-msg(my_integration)
+*messagebox(my_integration)
+*msg(my_integration)
 
 ***************************************************************************************
 ***************************************************************************************
@@ -132,8 +147,8 @@ isValid=SUBSTR(my_response,isValidInicial,isValidResultado)
 *msg(isValidInicial)
 *messagebox("OLA isValidFinal")
 *msg(isValidFinal)
-messagebox("OLA ISVALID")
-msg(isValid)
+*messagebox("OLA ISVALID")
+*msg(isValid)
 
 
 IF isValid="false"
@@ -150,7 +165,10 @@ IF isValid="false"
 	errorCodeResultado=(errorCodeFinal)-(errorCodeInicial)
 	my_errorCode=SUBSTR(my_response,errorCodeInicial,errorCodeResultado)
 	messagebox(my_errorCode,"errorCode")
-	
+
+	***
+	StrToFile(my_errorCode, my_folder+nomeDoc+"-"+numFact+"-"+"verifica_estado.txt",4)
+	*msg(my_teste)
 	Create Cursor curs_err1 (nome c(250), errorCode c(250))
 	SELECT curs_err1
 		GO TOP
