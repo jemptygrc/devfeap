@@ -5,7 +5,7 @@
 *      :: Cliente:     Ambienti
 *      :: Objetivo:    Enviar XML     
 * Histórico de Versões
-*      :: 16/07/2021 »» JM :: Registo Logfile
+*      :: 19/07/2021 »» JM :: Variavel my_folderLog
 *================================================================================================================================================
 
 
@@ -43,9 +43,9 @@ numEstab=ft.ESTAB
 
 
 *!* Definir qual a pasta no servidor *!*
-LOCAL my_folder
-my_folder=""
-my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LXML\"
+PRIVATE my_folderLog
+my_folderLog=""
+my_folderLog="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LXML\"
 
 *************************************************************************************************************************
 *************************************************************************************************************************
@@ -290,7 +290,7 @@ endif
 			msg("Estado do seu pedido: «"+asyncStatus+"»"+chr(13)+chr(10)+chr(13)+chr(10)+"Clique na tecla OK para continuar.")
 			*messagebox("asyncStatus")
 			*msg(asyncStatus)
-			StrToFile(asyncStatus, my_folder+nomeDoc+"-"+numFact+"-"+astr(nrTentativas)+"-tentativas.txt",4)
+			StrToFile(asyncStatus, my_folderLog+nomeDoc+"-"+numFact+"-"+astr(nrTentativas)+"-tentativas.txt",4)
 
 			If nrTentativas=10
 				msg("Algo correu mal... Erro de comunicação e excesso de tentativas, tente novamente mais tarde")
@@ -365,7 +365,7 @@ endif
 			m.escolheu=.f.
 			=CURSORSETPROP('Buffering',5,"curs_err1")
 			browlist("ALERTA GRINCOP ","curs_err1","curs_err1")
-			StrToFile(my_errorCode, my_folder+nomeDoc+"-"+numFact+"-erroEstado.txt",4)
+			StrToFile(my_errorCode, my_folderLog+nomeDoc+"-"+numFact+"-erroEstado.txt",4)
 			msg("Atenção! O documento «"+nomeDoc+" "+astr(numFact)+"» do cliente: «"+nomeCliente+"» tem erros que devem ser corrigidos")
 			****CHAMADA AO PROCEDIMENTO PARA VALIDAR ERROS
 			DO ProcValidaErros
@@ -412,7 +412,7 @@ endif
 		my_outbound_final=AT('IntlVatCode',responseRequestStatus)-3
 		my_outbound_resultado=my_outbound_final-my_outbound_inicial
 		my_outbound=SUBSTR(responseRequestStatus,my_outbound_inicial,my_outbound_resultado)
-		StrToFile(my_outbound, my_folder+nomeDoc+"-"+numFact+"-outbound.txt",4)
+		StrToFile(my_outbound, my_folderLog+nomeDoc+"-"+numFact+"-outbound.txt",4)
 		*msg(my_outbound)
 		**************************************************************************
 		***CHAMADA AO PROCEDIMENTO PARA GUARDAR OUTBOUND FINANCIAL DOCUMENT ID NA FT3
@@ -441,7 +441,7 @@ PROCEDURE ProcSaveOutbound
 		WHERE	
 		ft3.ft3stamp='<<my_ftstamp>>'
 	ENDTEXT
-		msg(updt_out)
+		*msg(updt_out)
 	if u_sqlexec ([BEGIN TRANSACTION])
 		if u_sqlexec(updt_out)
 			u_sqlexec([COMMIT TRANSACTION])
@@ -452,7 +452,7 @@ PROCEDURE ProcSaveOutbound
 			exit
 		endif
 	endif
-	StrToFile(updt_out, my_folder+nomeDoc+"-"+numFact+"-upd_out.txt",4)
+	StrToFile(updt_out, my_folderLog+nomeDoc+"-"+numFact+"-upd_out.txt",4)
 ENDPROC
 
 ***********************************************************************************************

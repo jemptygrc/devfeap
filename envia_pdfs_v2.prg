@@ -5,7 +5,7 @@
 *      :: Cliente:     AMBIENTI D INTERNI
 *      :: Objetivo:    Enviar PDFs com assinatura eletronica de seguida    
 * Histórico de Versões
-*      :: 06/07/2021 »» JM :: Registo Log File
+*      :: 19/07/2021 »» JM :: Variavel my_folderLog
 *================================================================================================================================================
 
 
@@ -48,7 +48,7 @@ LOCAL my_folder
 my_folder=""
 my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\PDFs\"
 
-LOCAL my_folderLog
+PRIVATE my_folderLog
 my_folderLog=""
 my_folderLog="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LPDF\"
 ********************************************************************************************
@@ -508,7 +508,7 @@ If asyncStatus="Finished"
 	my_outbound_resultado=my_outbound_final-my_outbound_inicial
 	my_outbound=SUBSTR(my_response_service,my_outbound_inicial,my_outbound_resultado)
 	*msg(my_outbound)
-	StrToFile(my_outbound,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Sucesso_outbound.txt",4)
+	StrToFile(my_outbound,my_folderLog+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-Sucesso_outbound.txt",4)
 
 	**SerializedInput
 	*LOCAL my_serialized_inicial,my_serialized_final
@@ -584,7 +584,7 @@ documentLink_Inicial=(AT('Link',my_response_service))+7
 documentLink_Final=AT('}]}',my_response_service)-1
 documentLink_Resultado=(documentLink_Final)-(documentLink_Inicial)
 documentLink=SUBSTR(my_response_service,documentLink_Inicial,documentLink_Resultado)
-StrToFile(documentLink,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Sucesso_documentLink.txt",4)
+StrToFile(documentLink,my_folderLog+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Sucesso_documentLink.txt",4)
 
 *msg(documentLink)
 ****************************************************
@@ -657,7 +657,7 @@ IF isValidEmail="false"
 	errorCodeEmail_Final=AT('Field',request_data)-3
 	errorCodeEmail_Resultado=errorCodeEmail_Final-errorCodeEmail_Inicial
 	errorCodeEmail=SUBSTR(request_data,errorCodeEmail_Inicial,errorCodeEmail_Resultado)
-	StrToFile(errorCodeEmail,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Erro_errorCodeEmail.txt",4)
+	StrToFile(errorCodeEmail,my_folderLog+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Erro_errorCodeEmail.txt",4)
 	*msg(errorCodeEmail)
 
 	DO CASE
