@@ -5,7 +5,7 @@
 *      :: Cliente:     AMBIENTI D INTERNI
 *      :: Objetivo:    Enviar PDFs com assinatura eletronica de seguida    
 * Histórico de Versões
-*      :: 19/07/2021 »» JM :: Variavel my_folderLog
+*      :: 20/07/2021 »» JM :: Adicionado trim ao my_ftstamp e adicionada variavel my_ftstamp aos strtofile
 *================================================================================================================================================
 
 
@@ -138,7 +138,7 @@ if factFe.sel
 		*RETURN
 	*else
 ******************
-my_ftstamp=factFe.ftstamp
+my_ftstamp=alltrim(factFe.ftstamp)
 
 ********************************************************************************************
 ********************************************************************************************
@@ -231,11 +231,11 @@ RELEASE loFac
 	if u_sqlexec ([BEGIN TRANSACTION])
 		if u_sqlexec(updt_base)
 			u_sqlexec([COMMIT TRANSACTION])
-			StrToFile(updt_base,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Sucesso_Update_Base64.txt",4)
+			StrToFile(updt_base,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Sucesso_Update_Base64.txt",4)
 		else	
 			u_sqlexec([ROLLBACK])
 			msg("Erro - updt_base - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
-			StrToFile(updt_base,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Erro_Update_Base64.txt",4)
+			StrToFile(updt_base,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Erro_Update_Base64.txt",4)
 			Gowww("https://www.grincop.pt/contactos/")
 			exit
 		endif
@@ -350,7 +350,7 @@ if isValid="false"
 	errorCode=SUBSTR(my_response3,errorCodeInicial,errorCodeResultado)
 	*messagebox(errorCode,"errorCode")
 
-	StrToFile(errorCode,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Erro_Enviar.txt",4)
+	StrToFile(errorCode,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Erro_Enviar.txt",4)
 
 DO CASE
 CASE errorCode = "INVALID_INTL_VAT_CODE"
@@ -449,7 +449,7 @@ DO WHILE asyncStatus!="Finished"
 		*msg(asyncStatus)
 		If nrTentativas=10
 			msg("Algo correu mal... Erro de comunicação e excesso de tentativas, tente novamente mais tarde")
-			StrToFile(asyncStatus,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-tentativas.txt",4)
+			StrToFile(asyncStatus,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-tentativas.txt",4)
 			EXIT
 			RETURN
 		Endif
@@ -466,7 +466,7 @@ DO WHILE asyncStatus!="Finished"
 	msg(errorCodeAsync)
 
 	IF asyncStatus="Error"
-	StrToFile(errorCodeAsync,my_folderLog+(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-errorCodeAsync.txt",4)
+	StrToFile(errorCodeAsync,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-errorCodeAsync.txt",4)
 	*MSG("OLA CONDICAO ASYNCSTATUS = ERROR E ERROR CODE")
 	*MSG(errorCodeAsync)
 	DO CASE
@@ -508,7 +508,7 @@ If asyncStatus="Finished"
 	my_outbound_resultado=my_outbound_final-my_outbound_inicial
 	my_outbound=SUBSTR(my_response_service,my_outbound_inicial,my_outbound_resultado)
 	*msg(my_outbound)
-	StrToFile(my_outbound,my_folderLog+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-Sucesso_outbound.txt",4)
+	StrToFile(my_outbound,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-Sucesso_outbound.txt",4)
 
 	**SerializedInput
 	*LOCAL my_serialized_inicial,my_serialized_final
@@ -584,7 +584,7 @@ documentLink_Inicial=(AT('Link',my_response_service))+7
 documentLink_Final=AT('}]}',my_response_service)-1
 documentLink_Resultado=(documentLink_Final)-(documentLink_Inicial)
 documentLink=SUBSTR(my_response_service,documentLink_Inicial,documentLink_Resultado)
-StrToFile(documentLink,my_folderLog+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Sucesso_documentLink.txt",4)
+StrToFile(documentLink,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Sucesso_documentLink.txt",4)
 
 *msg(documentLink)
 ****************************************************
@@ -657,7 +657,7 @@ IF isValidEmail="false"
 	errorCodeEmail_Final=AT('Field',request_data)-3
 	errorCodeEmail_Resultado=errorCodeEmail_Final-errorCodeEmail_Inicial
 	errorCodeEmail=SUBSTR(request_data,errorCodeEmail_Inicial,errorCodeEmail_Resultado)
-	StrToFile(errorCodeEmail,my_folderLog+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Erro_errorCodeEmail.txt",4)
+	StrToFile(errorCodeEmail,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-Erro_errorCodeEmail.txt",4)
 	*msg(errorCodeEmail)
 
 	DO CASE
