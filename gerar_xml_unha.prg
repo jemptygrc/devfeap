@@ -1,11 +1,11 @@
 *================================================================================================================================================
 * GRINCOP LDA
-*      :: Data CriaÃ§Ã£o:    21/07/2021
-*      :: Programador:     JoÃ£o Mendes
+*      :: Data Criação:    21/07/2021
+*      :: Programador:     João Mendes
 *      :: Cliente:     TESTES
 *      :: Objetivo:    CRIAR XML CIUS-PT MANUALMENTE   
-* HistÃ³rico de VersÃµes
-*      :: 21/07/2021 Â»Â» JM :: CriaÃ§Ã£o
+* Histórico de Versões
+*      :: 21/07/2021 »» JM :: Criação
 *================================================================================================================================================
 ************************************************************************************************
 ************************************************************************************************
@@ -18,11 +18,11 @@ my_folder="\\10.0.0.13\Dados\04-GRINCOP_PHC\"
 
 
 IF DIRECTORY(my_folder)
-    msg("Sucesso! LigaÃ§Ã£o validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
+    msg("Sucesso! Ligação validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
     msg("O servidor respondeu. A exportar fatura","WAIT")
 ELSE 
-    msg("O servidor nÃ£o respondeu","WAIT")
-    msg("Erro! NÃ£o foi possÃ­vel ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
+    msg("O servidor não respondeu","WAIT")
+    msg("Erro! Não foi possível ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
     return
 ENDIF 
 
@@ -97,7 +97,7 @@ u_sqlexec(getIVA, "ivaCur")
 
 ************************************************************************************************
 ************************************************************************************************
-if pergunta("Pretende anexar PDF da factura Ã Â Factura EletrÃ³nica?")
+if pergunta("Pretende anexar PDF da factura à Factura Eletrónica?")
    base64PDF = emitePDF()
 else
    base64PDF = .null.
@@ -288,8 +288,10 @@ endtext
 msg(invoiceJSON)
 *msg(curs_teste)
 *wait wind cursortoxml("invoiceJSON","\\10.0.0.13\Dados\04-GRINCOP_PHC\teste.xml",0,512)
+
 *wait wind cursortoxml("curs_teste","\\10.0.0.13\Dados\04-GRINCOP_PHC\teste.xml",,512)
-wait wind cursortoxml("e1Cur","\\10.0.0.13\Dados\04-GRINCOP_PHC\teste.xml",0,512)
+wait wind cursortoxml("e1Cur","\\10.0.0.13\Dados\04-GRINCOP_PHC\teste.xml",1,512,10000,"ublschema.xsd","C:\Users\jmendes\Desktop\ublschema.xsd")
+
 return
 
 loRequest = CREATEOBJECT("Microsoft.XMLHTTP")
@@ -316,7 +318,7 @@ function emitePDF()
 
     u_sqlexec(getIDU, "iducur")
     if reccount("iducur") <= 0
-        msg("NÃ£o foram encontradas impressÃµes.")
+        msg("Não foram encontradas impressões.")
         return
     endif
 
@@ -333,12 +335,12 @@ function emitePDF()
     Append Blank
     Replace xVars.no With 1
     Replace xVars.tipo With "T"
-    Replace xVars.Nome With "ImpressÃ£o" 
+    Replace xVars.Nome With "Impressão" 
     Replace xVars.Pict With ""
     Replace xVars.lOrdem With 1
     Replace xVars.tbVal With iduStr
     m.escolheu = .f.
-    docomando("do form usqlvar with 'xvars', 'Seleccione a ImpressÃ£o', .t.")
+    docomando("do form usqlvar with 'xvars', 'Seleccione a Impressão', .t.")
 
     if !m.escolheu
         return .null.
@@ -348,7 +350,7 @@ function emitePDF()
     go top
     iduescolhido = xvars.cvalor
     if empty(iduescolhido)
-        msg("Por favor escolha uma impressÃ£o vÃ¡lida.")
+        msg("Por favor escolha uma impressão válida.")
         return
     endif
 
