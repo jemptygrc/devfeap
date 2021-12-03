@@ -1,7 +1,6 @@
 *================================================================================================================================================
-* GRINCOP LDA
 *      :: Data Criação:    21/05/2021
-*      :: Programador:     João Mendes
+*      :: Programador:     jemptygrc
 *      :: Cliente:     INTERNO
 *      :: Objetivo:    Gerar varios ficheiros XML de seguida com PDF     
 * Histórico de Versões
