@@ -1,11 +1,10 @@
 *================================================================================================================================================
-* GRINCOP LDA
-*      :: Data Criação:    30/06/2021
-*      :: Programador:     João Mendes
-*      :: Cliente:     AMBINTI D INTERNI
+
+*      :: Data CriaÃ§Ã£o:    30/06/2021
+*      :: Programador:     jemptygrc
 *      :: Objetivo:    Reenviar por email PDFs ja assinados    
-* Histórico de Versões
-*      :: 06/07/2021 »» JM :: Validação e identação codigo
+* HistÃ³rico de VersÃµes
+*      :: 06/07/2021 Â»Â» JM :: ValidaÃ§Ã£o e identaÃ§Ã£o codigo
 *================================================================================================================================================
 
 
@@ -13,7 +12,7 @@
 *Resend PDF invoice email notification
 *https://dcn-solution.saphety.com/Dcn.Sandbox.Client/assets/api-docs/notebooks/sent-notifications.html
 if !pergunta("Pretende reenviar a(s) fatura(s)?",1,"Este processo pode demorar algum tempo",.T.)
-	msg("Operação cancelada","WAIT")
+	msg("OperaÃ§Ã£o cancelada","WAIT")
 	return
 endif
 ************************************************************************************************
@@ -22,11 +21,11 @@ endif
 LOCAL my_response
 LOCAL xpos
 LOCAL my_token
-*Parametros JSON para envio à API
+*Parametros JSON para envio Ã  API
 TEXT TO mJSON TEXTMERGE NOSHOW
 {
-		"username": "geral@adinterni.com",
-		"password": "Ambientifact2021*"
+		"username": "geral@alguem.pt",
+		"password": "Password"
 }
 ENDTEXT
 *URL da API
@@ -37,7 +36,7 @@ loHTTP3.Open("POST", mBaseURL)
 *Headers da chamada
 loHTTP3.SetRequestHeader("content-type", "application/json")
 
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 *loHTTP3.SetRequestHeader("Authorization","Basic OWYwODBhY2ItYmIzMC00Y2ZhLWE4YjQtODU4ZjFmZjk3NDYzOmgjQlNhWg==")
 loHTTP3.Send(mJSON)
 
@@ -64,7 +63,7 @@ select factFE
 emailEnvio=alltrim(factFE.EMAIL)
 my_outbound=alltrim(factFE.OUTBOUND)
 numFact=factFE.NUMDOC
-*Parametros JSON para envio à API
+*Parametros JSON para envio Ã  API
 TEXT TO payload TEXTMERGE NOSHOW
 {
 	"OutboundFinancialDocumentId": "<<my_outbound>>",
@@ -84,7 +83,7 @@ loHTTP3 = CREATEOBJECT("WinHttp.WinHttpRequest.5.1")
 loHTTP3.Open("POST", mBaseURL2)
 *Headers da chamada
 loHTTP3.SetRequestHeader("content-type", "application/json")
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 loHTTP3.SetRequestHeader("Authorization","bearer " + my_token)
 *msg(payload)
 loHTTP3.Send(payload)
@@ -109,14 +108,14 @@ errorCodeEmail=SUBSTR(request_data,errorCodeEmail_Inicial,errorCodeEmail_Resulta
 *msg(errorCodeEmail)
 DO CASE
 CASE errorCodeEmail = "INVALID_EMAIL"
-		msg("Atenção! A fatura: «"+astr(numFact)+"» não foi enviada! O e-mail do cliente: «"+alltrim(cliente)+"» está mal preenchido. Por favor verifique a ficha de cliente.","FORM")
+		msg("AtenÃ§Ã£o! A fatura: Â«"+astr(numFact)+"Â» nÃ£o foi enviada! O e-mail do cliente: Â«"+alltrim(cliente)+"Â» estÃ¡ mal preenchido. Por favor verifique a ficha de cliente.","FORM")
 	return
 CASE empty(errorCodeEmail)
 	msg("Sem erros! Em processamento...","TRADUZIR")
 OTHERWISE
-	MESSAGEBOX("Erro desconhecido no envio de e-mail! Por favor contate o administrador de sistema GRINCOP")
+	MESSAGEBOX("Erro desconhecido no envio de e-mail! Por favor contate o administrador de sistema JM")
 	return
 ENDCASE
 
-messagebox("Sucesso! E-mail(s) enviado(s)"+chr(13)+chr(10)+chr(13)+chr(10)+"Clique em OK para continuar",0+64,"GRINCOP")
-msg("Operação concluída","WAIT")
+messagebox("Sucesso! E-mail(s) enviado(s)"+chr(13)+chr(10)+chr(13)+chr(10)+"Clique em OK para continuar",0+64,"JM")
+msg("OperaÃ§Ã£o concluÃ­da","WAIT")
