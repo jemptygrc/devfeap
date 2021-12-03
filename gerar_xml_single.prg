@@ -1,11 +1,11 @@
 *================================================================================================================================================
-* GRINCOP LDA
-*      :: Data Criação:    08/07/2021
-*      :: Programador:     João Mendes
-*      :: Cliente:     Ambienti D Interni
+
+*      :: Data CriaÃ§Ã£o:    08/07/2021
+*      :: Programador:     jemptygrc
+*      :: Cliente:     
 *      :: Objetivo:     TESTES DE XML COM PDF INCLUIDO   
-* Histórico de Versões
-*      :: 08/07/2021 »» JM :: Alteracao TCFilepdf
+* HistÃ³rico de VersÃµes
+*      :: 08/07/2021 Â»Â» JM :: Alteracao TCFilepdf
 *================================================================================================================================================
 
 
@@ -30,8 +30,8 @@ my_xml=""
 LOCAL my_folder
 my_folder=""
 *!* Definir qual a pasta no servidor *!*
-*my_folder="F:\04-GRINCOP_PHC\" 
-my_folder="\\10.0.0.13\Dados\04-GRINCOP_PHC\"
+*my_folder="xxx" 
+my_folder="\\1xxxx"
 
 LOCAL my_pathXML
 my_pathXML=""
@@ -44,7 +44,7 @@ my_pathXML=alltrim(ft3.u_pathXML)
 ***************************************************************************************************************
 ***************************************************************************************************************
 if !pergunta("Pretende exportar a fatura para ficheiro XML",1,"Este processo pode demorar algum tempo",.T.)
-	msg("Operação cancelada","WAIT")
+	msg("OperaÃ§Ã£o cancelada","WAIT")
 	return
 endif
 
@@ -52,17 +52,17 @@ endif
 
 
 IF DIRECTORY(my_folder)
-    msg("Sucesso! Ligação validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
+    msg("Sucesso! LigaÃ§Ã£o validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
     msg("O servidor respondeu. A exportar fatura","WAIT")
 ELSE 
-    msg("O servidor não respondeu","WAIT")
-    msg("Erro! Não foi possível ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
+    msg("O servidor nÃ£o respondeu","WAIT")
+    msg("Erro! NÃ£o foi possÃ­vel ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
     return
 ENDIF 
 
 
 if !empty(my_pathXML)
-    msg("Atenção! Esta fatura já tinha sido exportada para XML"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
+    msg("AtenÃ§Ã£o! Esta fatura jÃ¡ tinha sido exportada para XML"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
 endif
 
 
@@ -101,8 +101,8 @@ RENAME (c_nomexml) to (m.cDirXML)
 *****************************************************
 my_pathXML=""
 my_pathXML=m.cDirXML
-*my_folder="F:\04-GRINCOP_PHC\"
-my_folder="\\10.0.0.13\Dados\04-GRINCOP_PHC"
+*my_folder="xxx"
+my_folder="\\1xxx"
 
 msg("O ficheiro '"+m.cDirXML+"' foi exportado com sucesso para a pasta: '"+my_folder+"'","",.t.)
 msg("Fatura exportada com sucesso!","WAIT")
@@ -127,7 +127,7 @@ if u_sqlexec ([BEGIN TRANSACTION])
 		u_sqlexec([COMMIT TRANSACTION])	
 	else	
 		u_sqlexec([ROLLBACK])	
-		Messagebox("Erro - updt_xml - p.f. contracte o seu Administrador de Sistema GRINCOP!!")	
+		Messagebox("Erro - updt_xml - p.f. contracte o seu Administrador de Sistema jm!!")	
 		exit	
 	endif	
 endif	
