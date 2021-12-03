@@ -1,11 +1,11 @@
 *================================================================================================================================================
-* GRINCOP LDA
-*      :: Data Criação:    21/07/2021
-*      :: Programador:     João Mendes
+*
+*      :: Data CriaÃ§Ã£o:    21/07/2021
+*      :: Programador:     xxx
 *      :: Cliente:     TESTES
 *      :: Objetivo:    CRIAR XML CIUS-PT MANUALMENTE   
-* Histórico de Versões
-*      :: 21/07/2021 »» JM :: Criação
+* HistÃ³rico de VersÃµes
+*      :: 21/07/2021 Â»Â» JM :: CriaÃ§Ã£o
 *================================================================================================================================================
 ************************************************************************************************
 ************************************************************************************************
@@ -13,16 +13,16 @@
 PRIVATE my_folder
 my_folder=""
 *!* Definir qual a pasta no servidor *!*
-*my_folder="F:\04-GRINCOP_PHC\" 
-my_folder="\\10.0.0.13\Dados\04-GRINCOP_PHC\"
+*my_folder="xx" 
+my_folder="\\xx"
 
 
 IF DIRECTORY(my_folder)
-    msg("Sucesso! Ligação validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
+    msg("Sucesso! LigaÃ§Ã£o validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
     msg("O servidor respondeu. A exportar fatura","WAIT")
 ELSE 
-    msg("O servidor não respondeu","WAIT")
-    msg("Erro! Não foi possível ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
+    msg("O servidor nÃ£o respondeu","WAIT")
+    msg("Erro! NÃ£o foi possÃ­vel ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
     return
 ENDIF 
 
@@ -97,7 +97,7 @@ u_sqlexec(getIVA, "ivaCur")
 
 ************************************************************************************************
 ************************************************************************************************
-if pergunta("Pretende anexar PDF da factura à Factura Eletrónica?")
+if pergunta("Pretende anexar PDF da factura Ã Â Factura EletrÃ³nica?")
    base64PDF = emitePDF()
 else
    base64PDF = .null.
@@ -318,7 +318,7 @@ function emitePDF()
 
     u_sqlexec(getIDU, "iducur")
     if reccount("iducur") <= 0
-        msg("Não foram encontradas impressões.")
+        msg("NÃ£o foram encontradas impressÃµes.")
         return
     endif
 
@@ -335,12 +335,12 @@ function emitePDF()
     Append Blank
     Replace xVars.no With 1
     Replace xVars.tipo With "T"
-    Replace xVars.Nome With "Impressão" 
+    Replace xVars.Nome With "ImpressÃ£o" 
     Replace xVars.Pict With ""
     Replace xVars.lOrdem With 1
     Replace xVars.tbVal With iduStr
     m.escolheu = .f.
-    docomando("do form usqlvar with 'xvars', 'Seleccione a Impressão', .t.")
+    docomando("do form usqlvar with 'xvars', 'Seleccione a ImpressÃ£o', .t.")
 
     if !m.escolheu
         return .null.
@@ -350,7 +350,7 @@ function emitePDF()
     go top
     iduescolhido = xvars.cvalor
     if empty(iduescolhido)
-        msg("Por favor escolha uma impressão válida.")
+        msg("Por favor escolha uma impressÃ£o vÃ¡lida.")
         return
     endif
 
