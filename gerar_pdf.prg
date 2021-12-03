@@ -1,8 +1,8 @@
 *************************************
 ****Titulo: Gerar PDF
-****Cliente: Valcon
+****Cliente: 
 ****Data: 29/04/2021
-****Ultimo Alterção: 29/06/2021
+****Ultimo AlterÃ§Ã£o: 29/06/2021
 *************************************
 
 * chama o ecra de faturas
@@ -13,7 +13,7 @@ select ft
 LOCAL my_folder
 my_folder=""
 *!* Definir qual a pasta no servidor *!*
-my_folder="\\10.0.0.13\Dados\04-GRINCOP_PHC" 
+my_folder="\\xx\Dxx\xxxC" 
 
 ********************************************************************************************
 ********************************************************************************************
@@ -35,7 +35,7 @@ list_ronly(1)=.f.
 list_tam(1)=8*5
 list_combo(1)=""
 
-list_tit(2) = "Nº Cliente"
+list_tit(2) = "NÂº Cliente"
 list_cam(2) = "factFe.CLIENTE"
 list_pic(2) = ""
 list_ali(2) = 0
@@ -75,18 +75,18 @@ endif
 
 
 if !pergunta("Pretende exportar a(s) fatura(s) para ficheiro PDF",1,"Este processo pode demorar algum tempo",.T.)
-	msg("Operação cancelada","WAIT")
+	msg("OperaÃ§Ã£o cancelada","WAIT")
 	return
 endif
 
 msg(my_folder)
 
 IF DIRECTORY(my_folder)
-            msg("Sucesso! Ligação validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
+            msg("Sucesso! LigaÃ§Ã£o validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
             msg("O servidor respondeu. A exportar fatura","WAIT")
         ELSE 
-            msg("O servidor não respondeu","WAIT")
-            msg("Erro! Não foi possível ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
+            msg("O servidor nÃ£o respondeu","WAIT")
+            msg("Erro! NÃ£o foi possÃ­vel ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
         return
         ENDIF 
 
