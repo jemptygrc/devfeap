@@ -42,7 +42,7 @@ PRIVATE documentLink
 documentLink=""
 LOCAL nifEmpresa
 nifEmpresa=""
-nifEmpresa="PT508369444"
+nifEmpresa="PTxxxxxxx"
 
 LOCAL my_folder
 my_folder=""
