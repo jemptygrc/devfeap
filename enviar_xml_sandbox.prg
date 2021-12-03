@@ -1,5 +1,5 @@
 ***ENVIAR XML SANDBOX
-***CLIENTE: VALCON
+***CLIENTE: 
 ***DATA: 15/06/2021
 ***ULTIMA ALTERACAO: 29/06/2021
 
@@ -26,7 +26,7 @@ nomeDoc=""
 
 LOCAL nifEmpresa
 nifEmpresa=""
-nifEmpresa="PT508369444"
+nifEmpresa="PTxxxx"
 
 *SELECT factFe
 SELECT FT
@@ -40,8 +40,8 @@ nomeCliente=alltrim(FT.NOME)
 
 *************************************************************************************************************************
 *************************************************************************************************************************
-if !pergunta("Pretende enviar o XML/CIUS PT?",1,"Deve verificar se já tem o ficheiro XML exportado",.T.)
-	msg("Operação cancelada","WAIT")
+if !pergunta("Pretende enviar o XML/CIUS PT?",1,"Deve verificar se jÃ¡ tem o ficheiro XML exportado",.T.)
+	msg("OperaÃ§Ã£o cancelada","WAIT")
 	return
 endif
 
@@ -52,7 +52,7 @@ endif
 
 	*!* Validar se o XML foi gerado
 	if empty(FT3.u_pathXML)
-		msg("Atenção! Desculpe, mas escolheu um documento que não tem o ficheiro XML."+chr(13)+chr(33)+"Deve exportar o documento para ficheiro XML e só depois fazer o envio","FORM")
+		msg("AtenÃ§Ã£o! Desculpe, mas escolheu um documento que nÃ£o tem o ficheiro XML."+chr(13)+chr(33)+"Deve exportar o documento para ficheiro XML e sÃ³ depois fazer o envio","FORM")
 		RETURN
 	else
 
@@ -86,11 +86,11 @@ endif
 *************************************************************************************************
 *************************************************************************************************
 
-	*Parametros JSON para envio Ã  API
+	*Parametros JSON para envio ÃƒÂ  API
 	TEXT TO mJSON TEXTMERGE NOSHOW
 	{
-		"username": "joao.mendes@grincop.pt",
-		"password":"Grincop2021"
+		"username": "xxxx@xxxx",
+		"password":"xxx"
 	}
 	ENDTEXT
 
@@ -152,7 +152,7 @@ endif
 
 	*msg(my_pathXML)
 	my_data=filetostr(my_pathXML)
-	*my_data=filetostr('F:\04-GRINCOP_PHC\ft03900000000272021.xml')
+	*my_data=filetostr('x:xxxx\xxx.xml')
 
 
 *************************************************************************************************
@@ -313,12 +313,12 @@ endif
 
 			asyncStatus=LEFT(status,teste2)
 			*messagebox("asynsstatus status")
-			msg("Estado do seu pedido: «"+asyncStatus+"»"+chr(13)+chr(10)+chr(13)+chr(10)+"Clique na tecla OK para continuar.")
+			msg("Estado do seu pedido: Â«"+asyncStatus+"Â»"+chr(13)+chr(10)+chr(13)+chr(10)+"Clique na tecla OK para continuar.")
 			*messagebox("asyncStatus")
 			*msg(asyncStatus)
 			
 			If nrTentativas=5
-				msg("Algo correu mal... Erro de comunicação e excesso de tentativas, tente novamente mais tarde")
+				msg("Algo correu mal... Erro de comunicaÃ§Ã£o e excesso de tentativas, tente novamente mais tarde")
 			RETURN
 			Endif
 		ENDIF
@@ -329,7 +329,7 @@ endif
 			errorCodeResultado=(errorCodeFinal)-(errorCodeInicial)
 			errorCode=SUBSTR(responseRequestStatus,errorCodeInicial,errorCodeResultado)
 
-			msg("Atenção! O documento «"+nomeDoc+" "+astr(numFact)+"» do cliente: «"+nomeCliente+"» tem erros que devem ser corrigidos")
+			msg("AtenÃ§Ã£o! O documento Â«"+nomeDoc+" "+astr(numFact)+"Â» do cliente: Â«"+nomeCliente+"Â» tem erros que devem ser corrigidos")
 
 			****CHAMADA AO PROCEDIMENTO PARA VALIDAR ERROS
 			DO ProcValidaErros
@@ -424,8 +424,8 @@ PROCEDURE ProcSaveOutbound
 			u_sqlexec([COMMIT TRANSACTION])
 		else	
 			u_sqlexec([ROLLBACK])
-			Messagebox("Erro - updt_out - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
-			Gowww("https://www.grincop.pt/contactos/")
+			Messagebox("Erro - updt_out - p.f. contacte o seu Administrador de Sistema jm!!")
+			Gowww("https:")
 			exit
 		endif
 	endif
@@ -438,50 +438,50 @@ PROCEDURE ProcValidaErros
 *messagebox("OLA ENTREI NO PROCEDURE ProcValidaErros")
 DO CASE
 	CASE errorCode = "COUNTRY_LEGAL_FORMAT_NOT_RECOGNIZED"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"«COUNTRY_LEGAL_FORMAT_NOT_RECOGNIZED» Formato inválido do ficheiro XML no documento: «"+nomeDoc+" "+astr(numFact)+"» Por favor verifique se o cliente: «"+astr(nomeCliente)+"» tem o NIF bem preenchido (Ex: PT123456789)","FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Â«COUNTRY_LEGAL_FORMAT_NOT_RECOGNIZEDÂ» Formato invÃ¡lido do ficheiro XML no documento: Â«"+nomeDoc+" "+astr(numFact)+"Â» Por favor verifique se o cliente: Â«"+astr(nomeCliente)+"Â» tem o NIF bem preenchido (Ex: PT123456789)","FORM")
 		return
 	CASE errorCode = "DATETIME_FORMAT_EXPECTED"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"DATA inválida no documento: «"+nomeDoc+" "+astr(numFact)+"» Por favor abra o último registo no ecrã das faturas","FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"DATA invÃ¡lida no documento: Â«"+nomeDoc+" "+astr(numFact)+"Â» Por favor abra o Ãºltimo registo no ecrÃ£ das faturas","FORM")
 		return
 	CASE errorCode = "NO_DESTINATION_INTEGRATION_DEFINED"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"O emissor do documento: «"+nomeDoc+" "+astr(numFact)+"» pertence a outra rede e não há ligações de integração definidas entre o emissor e o receptor.","FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"O emissor do documento: Â«"+nomeDoc+" "+astr(numFact)+"Â» pertence a outra rede e nÃ£o hÃ¡ ligaÃ§Ãµes de integraÃ§Ã£o definidas entre o emissor e o receptor.","FORM")
 		return
 	CASE errorCode = "FEATURE_UNAVAILABLE_FOR_COMPANY"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Esta funcionalidade não está disponível para a sua empresa","FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Esta funcionalidade nÃ£o estÃ¡ disponÃ­vel para a sua empresa","FORM")
 		return
 	CASE errorCode = "BE-CIUS-PT-05"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Impossível obter o emissor."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"ImpossÃ­vel obter o emissor."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return	
 	CASE errorCode = "BE-CIUS-PT-06"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Impossível obter o recetor."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"ImpossÃ­vel obter o recetor."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
 	CASE errorCode = "BE-CIUS-PT-07"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Impossível processar o conteudo do documento."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"ImpossÃ­vel processar o conteudo do documento."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
 	CASE errorCode = "BR-CIUS-PT-66"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Por favor verifique se o documento: «"+nomeDoc+" "+astr(numFact)+"» tem o Local de Descarga preenchido com a morada." +chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Por favor verifique se o documento: Â«"+nomeDoc+" "+astr(numFact)+"Â» tem o Local de Descarga preenchido com a morada." +chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
 	CASE errorCode = "BR-CIUS-PT-67"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"O conteudo fornecido como PDF não está convertido para o formato válido"+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"O conteudo fornecido como PDF nÃ£o estÃ¡ convertido para o formato vÃ¡lido"+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
 	CASE errorCode = "BR-CIUS-PT-68"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"O endereço de email não é válido."+chr(13)+chr(10)+chr(13)+"Use um endereço de email válido como <alguem@grincop.pt>"+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"O endereÃ§o de email nÃ£o Ã© vÃ¡lido."+chr(13)+chr(10)+chr(13)+"Use um endereÃ§o de email vÃ¡lido como <alguem@grincop.pt>"+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
 	CASE errorCode = "BR-CIUS-PT-69"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"A Data de vencimento é obrigatória."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"A Data de vencimento Ã© obrigatÃ³ria."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
 	CASE errorCode = "BR-CIUS-PT-70"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Percentagem de imposto aplicada ao desconto é obrigatória."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Percentagem de imposto aplicada ao desconto Ã© obrigatÃ³ria."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
 	CASE errorCode = "BR-CIUS-PT-71"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Percentagem de imposto aplicada ao encargo é obrigatória."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"Percentagem de imposto aplicada ao encargo Ã© obrigatÃ³ria."+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
 	CASE errorCode = "BR-CIUS-PT-72"
-		msg("Descrição do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"IBAN inválido"+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
+		msg("DescriÃ§Ã£o do Erro: "+chr(13)+chr(10)+chr(13)+chr(10)+"IBAN invÃ¡lido"+chr(13)+chr(10)+chr(13)+chr(10)+errorCode,"FORM")
 		return
 	CASE empty(errorCode)
 		msg("Sem erros! Em processamento...","TRADUZIR")
 OTHERWISE
-		msg("Erro desconhecido! Por favor contacte o administrador de sistema GRINCOP com a seguinte informação: "+chr(13)+chr(10)+chr(13)+chr(10)+errorCode)
-		Gowww("https://www.grincop.pt/contactos/")
+		msg("Erro desconhecido! Por favor contacte o administrador de sistema jm com a seguinte informaÃ§Ã£o: "+chr(13)+chr(10)+chr(13)+chr(10)+errorCode)
+		Gowww("ht")
 ENDCASE
