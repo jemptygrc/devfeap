@@ -1,11 +1,11 @@
 *================================================================================================================================================
-* GRINCOP LDA
-*      :: Data Criação:    30/06/2021
-*      :: Programador:     João Mendes
-*      :: Cliente:     AMBIENTI D INTERNI
+
+*      :: Data CriaÃ§Ã£o:    30/06/2021
+*      :: Programador:     jemptygrc
+*      :: Cliente:     
 *      :: Objetivo:    Enviar PDFs com assinatura eletronica de seguida    
-* Histórico de Versões
-*      :: 20/07/2021 »» JM :: Adicionado trim ao my_ftstamp e adicionada variavel my_ftstamp aos strtofile
+* HistÃ³rico de VersÃµes
+*      :: 20/07/2021 Â»Â» JM :: Adicionado trim ao my_ftstamp e adicionada variavel my_ftstamp aos strtofile
 *================================================================================================================================================
 
 
@@ -46,25 +46,25 @@ nifEmpresa="PT508369444"
 
 LOCAL my_folder
 my_folder=""
-my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\PDFs\"
+my_folder="\\XXX.XXX.XXX.XXX\PDFs\"
 
 PRIVATE my_folderLog
 my_folderLog=""
-my_folderLog="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LPDF\"
+my_folderLog="\\XXX.XXX.XXX.XXX\Log\LPDF\"
 ********************************************************************************************
 ********************************************************************************************
 ********************************************************************************************
 if !pergunta("Pretende enviar a(s) fatura(s)?",1,"Este processo pode demorar algum tempo",.T.)
-	msg("Operação cancelada","WAIT")
+	msg("OperaÃ§Ã£o cancelada","WAIT")
 	return
 endif
 
 IF DIRECTORY(my_folder)
-        msg("Sucesso! Ligação validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
+        msg("Sucesso! LigaÃ§Ã£o validada ao servidor"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para continuar")
         msg("O servidor respondeu! Pode selecionar a(s) fatura(s)","WAIT")
     ELSE 
-        msg("O servidor não respondeu","WAIT")
-        msg("Algo correu mal... Não foi possível ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
+        msg("O servidor nÃ£o respondeu","WAIT")
+        msg("Algo correu mal... NÃ£o foi possÃ­vel ligar ao servidor, tente novamente mais tarde"+chr(13)+chr(13)+chr(10)+chr(13)+"Clique OK para voltar")
         return
 ENDIF 
 
@@ -91,7 +91,7 @@ list_ronly(i)=.f.
 list_tam(i)=8*5
 list_combo(i)=""
 i=i+1
-list_tit(i) = "N.º Cliente"
+list_tit(i) = "N.Âº Cliente"
 list_cam(i) = "factFe.CLIENTE"
 list_pic(i) = ""
 list_ali(i) = 0
@@ -134,7 +134,7 @@ select factFe
 scan
 if factFe.sel
 	*if empty(my_pathpdf)
-		*msg("Atenção! Desculpe, mas escolheu um documento que não tem o ficheiro PDF."+chr(13)+chr(10)+"Deve exportar o documento para ficheiro PDF e só depois fazer o envio","FORM")
+		*msg("AtenÃ§Ã£o! Desculpe, mas escolheu um documento que nÃ£o tem o ficheiro PDF."+chr(13)+chr(10)+"Deve exportar o documento para ficheiro PDF e sÃ³ depois fazer o envio","FORM")
 		*RETURN
 	*else
 ******************
@@ -144,11 +144,11 @@ my_ftstamp=alltrim(factFe.ftstamp)
 ********************************************************************************************
 ********************************************************************************************
 *******************GET TOKEN*******************
-*Parametros JSON para envio à API
+*Parametros JSON para envio Ã  API
 TEXT TO mJSON TEXTMERGE NOSHOW
 {
-		"username": "geral@adinterni.com",
-		"password": "Ambientifact2021*"
+		"username": "geral@alguem.pt",
+		"password": "Password*"
 }
 ENDTEXT
 
@@ -159,7 +159,7 @@ loHTTP3 = CREATEOBJECT("WinHttp.WinHttpRequest.5.1")
 loHTTP3.Open("POST", mBaseURL)
 *Headers da chamada
 loHTTP3.SetRequestHeader("content-type", "application/json")
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 *loHTTP3.SetRequestHeader("Authorization","Basic OWYwODBhY2ItYmIzMC00Y2ZhLWE4YjQtODU4ZjFmZjk3NDYzOmgjQlNhWg==")
 loHTTP3.Send(mJSON)
 
@@ -234,9 +234,9 @@ RELEASE loFac
 			StrToFile(updt_base,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Sucesso_Update_Base64.txt",4)
 		else	
 			u_sqlexec([ROLLBACK])
-			msg("Erro - updt_base - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
+			msg("Erro - updt_base - p.f. contacte o seu Administrador de Sistema jm!!")
 			StrToFile(updt_base,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"Erro_Update_Base64.txt",4)
-			Gowww("https://www.grincop.pt/contactos/")
+			Gowww("https:")
 			exit
 		endif
 	endif
@@ -269,7 +269,7 @@ diadoc=PADL(DAY(ft.fdata), 2, '0')
 horadoc=ft.fdata
 etotal=ft.etotal
 Set Point To "." && Coloca o ponto na vez da virgula nas casas decimais
-*Parametros JSON para envio à API
+*Parametros JSON para envio Ã  API
 TEXT TO payload TEXTMERGE NOSHOW
 {
 	"IntlVatCode": "<<nifEmpresa>>",
@@ -303,7 +303,7 @@ loHTTP3.Open("POST", mBaseURL2)
 
 *loHTTP3.SetRequestHeader("content-type", "application/pdf")
 loHTTP3.SetRequestHeader("content-type", "application/json")
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 loHTTP3.SetRequestHeader("Authorization","bearer " + my_token)
 *msg(payload)
 loHTTP3.Send(payload)
@@ -354,16 +354,16 @@ if isValid="false"
 
 DO CASE
 CASE errorCode = "INVALID_INTL_VAT_CODE"
-	msg("NIF inválido na fatura: «"+astr(numFact)+"» "+chr(13)+chr(10)+"Por favor verifique se o cliente: «"+astr(cliente)+"» tem o NIF bem preenchido (Ex: PT123456789)","FORM")
+	msg("NIF invÃ¡lido na fatura: Â«"+astr(numFact)+"Â» "+chr(13)+chr(10)+"Por favor verifique se o cliente: Â«"+astr(cliente)+"Â» tem o NIF bem preenchido (Ex: PT123456789)","FORM")
 	return
 CASE errorCode = "DATETIME_FORMAT_EXPECTED"
-	msg("DATA inválida na fatura: «"+astr(numFact)+"» "+chr(13)+chr(10)+"Por favor abra o último registo no ecrã das faturas","FORM")
+	msg("DATA invÃ¡lida na fatura: Â«"+astr(numFact)+"Â» "+chr(13)+chr(10)+"Por favor abra o Ãºltimo registo no ecrÃ£ das faturas","FORM")
 CASE errorCode = "OUTBOUND_FINANCIAL_DOCUMENT_ALREADY_SENT"
-	msg("A fatura : «"+astr(numFact)+"» já foi enviada e não pode ser enviada novamente","FORM")
+	msg("A fatura : Â«"+astr(numFact)+"Â» jÃ¡ foi enviada e nÃ£o pode ser enviada novamente","FORM")
 	return
 OTHERWISE
-	msg("Erro desconhecido! Por favor contate o administrador de sistema GRINCOP")
-	Gowww("https://www.grincop.pt/contactos/")
+	msg("Erro desconhecido! Por favor contate o administrador de sistema jm")
+	Gowww("")
 ENDCASE
 Set Point To se_pointer && Repoe a virgula nas casas decimais
 return
@@ -388,7 +388,7 @@ service_url="https://dcn-solution.saphety.com/Dcn.Business.WebApi/api/PdfAsyncRe
 loHTTP3.Open("GET", service_url)
 *Headers da chamada
 loHTTP3.SetRequestHeader("content-type", "application/json")
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 loHTTP3.SetRequestHeader("Authorization","bearer "+my_token)
 *loHTTP3.Send(mJSONoutbound)
 loHTTP3.Send(my_requestid2)
@@ -433,7 +433,7 @@ DO WHILE asyncStatus!="Finished"
 		loHTTP3.Open("GET", service_url)
 		*Headers da chamada
 		loHTTP3.SetRequestHeader("content-type", "application/json")
-		*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+		*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 		loHTTP3.SetRequestHeader("Authorization","bearer "+my_token)
 		loHTTP3.Send(my_requestid2)
 		WAIT WINDOW loHTTP3.status
@@ -448,7 +448,7 @@ DO WHILE asyncStatus!="Finished"
 		*messagebox("asyncStatus")
 		*msg(asyncStatus)
 		If nrTentativas=10
-			msg("Algo correu mal... Erro de comunicação e excesso de tentativas, tente novamente mais tarde")
+			msg("Algo correu mal... Erro de comunicaÃ§Ã£o e excesso de tentativas, tente novamente mais tarde")
 			StrToFile(asyncStatus,my_folderLog+my_ftstamp+alltrim(factFe.nomeDoc)+"-"+astr(factFe.numdoc)+"-"+"-tentativas.txt",4)
 			EXIT
 			RETURN
@@ -471,17 +471,17 @@ DO WHILE asyncStatus!="Finished"
 	*MSG(errorCodeAsync)
 	DO CASE
 	CASE errorCodeAsync = "INVALID_INTL_VAT_CODE"
-		msg("Atenção! NIF inválido na fatura: «"+astr(numFact)+"» "+chr(13)+chr(10)+"Por favor verifique se o cliente: «"+astr(cliente)+"» tem o NIF bem preenchido (Ex: PT123456789)","FORM")
+		msg("AtenÃ§Ã£o! NIF invÃ¡lido na fatura: Â«"+astr(numFact)+"Â» "+chr(13)+chr(10)+"Por favor verifique se o cliente: Â«"+astr(cliente)+"Â» tem o NIF bem preenchido (Ex: PT123456789)","FORM")
 		return
 	CASE errorCodeAsync = "DATETIME_FORMAT_EXPECTED"
-		msg("Atenção! DATA inválida na fatura: «"+astr(numFact)+"» "+chr(13)+chr(10)+"Por favor abra o último registo no ecrã das faturas","FORM")
+		msg("AtenÃ§Ã£o! DATA invÃ¡lida na fatura: Â«"+astr(numFact)+"Â» "+chr(13)+chr(10)+"Por favor abra o Ãºltimo registo no ecrÃ£ das faturas","FORM")
 		return
 	CASE errorCodeAsync = "OUTBOUND_FINANCIAL_DOCUMENT_ALREADY_SENT"
-		msg("Atenção! A fatura: «"+astr(numFact)+"» do cliente: «"+alltrim(cliente)+"» já foi enviada e não pode ser enviada novamente.","FORM")
+		msg("AtenÃ§Ã£o! A fatura: Â«"+astr(numFact)+"Â» do cliente: Â«"+alltrim(cliente)+"Â» jÃ¡ foi enviada e nÃ£o pode ser enviada novamente.","FORM")
 		return
 	OTHERWISE
-		msg("Erro desconhecido! Por favor contate o administrador de sistema GRINCOP")
-		Gowww("https://www.grincop.pt/contactos/")
+		msg("Erro desconhecido! Por favor contate o administrador de sistema jm")
+		Gowww("")
 		return
 	ENDCASE
 	ENDIF
@@ -537,7 +537,7 @@ Endif
 ************************************************************************************************
 **** Get a List of Document Formats storage by DocumentId 
 **COMENTADO 04/06/2021
-*Parametros JSON para envio à API
+*Parametros JSON para envio Ã  API
 *TEXT TO payload TEXTMERGE NOSHOW
 *{
 *	"ServerBaseUrl": "https://dcn-solution.saphety.com/Dcn.Business.WebApi"
@@ -552,7 +552,7 @@ loHTTP3 = CREATEOBJECT("WinHttp.WinHttpRequest.5.1")
 loHTTP3.Open("POST", service_url)
 *Headers da chamada
 loHTTP3.SetRequestHeader("content-type", "application/json")
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 loHTTP3.SetRequestHeader("Authorization","bearer " + my_token)
 
 *msg(payload)
@@ -563,7 +563,7 @@ loHTTP3.SetRequestHeader("Authorization","bearer " + my_token)
 loHTTP3.Open("GET", service_url)
 *Headers da chamada
 *loHTTP3.SetRequestHeader("content-type", "application/json")
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 loHTTP3.SetRequestHeader("Authorization","bearer "+my_token)
 
 loHTTP3.Send(service_url)
@@ -598,7 +598,7 @@ DO ProcSaveLink
 ***ENVIAR PDF
 ****2. Resend PDF invoice notifications 
 
-*Parametros JSON para envio à API
+*Parametros JSON para envio Ã  API
 TEXT TO mSendEmail TEXTMERGE NOSHOW
 {
 	"OutboundFinancialDocumentId": "<<my_outbound>>",
@@ -617,7 +617,7 @@ loHTTP3 = CREATEOBJECT("WinHttp.WinHttpRequest.5.1")
 loHTTP3.Open("POST", mBaseUrlEmail)
 *Headers da chamada
 loHTTP3.SetRequestHeader("content-type", "application/json")
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 loHTTP3.SetRequestHeader("Authorization","bearer " + my_token)
 *msg(mSendEmail)
 loHTTP3.Send(mSendEmail)
@@ -662,12 +662,12 @@ IF isValidEmail="false"
 
 	DO CASE
 	CASE errorCodeEmail = "INVALID_EMAIL"
-		msg("Atenção! A fatura: «"+astr(numFact)+"» não foi enviada! O e-mail do cliente: «"+alltrim(cliente)+"» está preenchido incorretamente."+chr(13)+chr(10)+" Por favor verifique a ficha de cliente.","FORM")
+		msg("AtenÃ§Ã£o! A fatura: Â«"+astr(numFact)+"Â» nÃ£o foi enviada! O e-mail do cliente: Â«"+alltrim(cliente)+"Â» estÃ¡ preenchido incorretamente."+chr(13)+chr(10)+" Por favor verifique a ficha de cliente.","FORM")
 		EXIT
 		return
 	OTHERWISE
-		msg("Erro desconhecido no envio de e-mail! Por favor contate o Administrador de sistema GRINCOP")
-		Gowww("https://www.grincop.pt/contactos/")
+		msg("Erro desconhecido no envio de e-mail! Por favor contate o Administrador de sistema jm")
+		Gowww("https:")
 		EXIT
 		return
 	ENDCASE
@@ -683,8 +683,8 @@ endif
 endscan
 ***********************************************************************************************
 
-messagebox("Sucesso! E-mail(s) enviado(s)"+chr(13)+chr(10)+chr(13)+chr(10)+"Clique em OK para continuar",0+64,"GRINCOP")
-msg("Operação concluida!","WAIT")
+messagebox("Sucesso! E-mail(s) enviado(s)"+chr(13)+chr(10)+chr(13)+chr(10)+"Clique em OK para continuar",0+64,"jm")
+msg("OperaÃ§Ã£o concluida!","WAIT")
 set date DMY
 PDU_62X0WTFB5.Actualizarsopag.Nossobutton1.click()
 
@@ -716,9 +716,9 @@ PROCEDURE ProcAtualizaEstado
 
 		else	
 			u_sqlexec([ROLLBACK])
-			msg("Erro - updt_status - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
+			msg("Erro - updt_status - p.f. contacte o seu Administrador de Sistema jm!!")
 			StrToFile(updt_status,my_folderLog+my_ftstamp+"-Erro_updt_status.txt",4)
-			Gowww("https://www.grincop.pt/contactos/")
+			Gowww("https:/")
 			exit
 		endif
 	endif
@@ -743,9 +743,9 @@ PROCEDURE ProcSaveOutbound
 			StrToFile(updt_status,my_folderLog+my_ftstamp+"-Sucesso_updt_out.txt",4)
 		else	
 			u_sqlexec([ROLLBACK])
-			msg("Erro - updt_out - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
+			msg("Erro - updt_out - p.f. contacte o seu Administrador de Sistema jm!!")
 			StrToFile(updt_status,my_folderLog+my_ftstamp+"-Erro_updt_out.txt",4)
-			Gowww("https://www.grincop.pt/contactos/")
+			Gowww("https:/")
 			exit
 		endif
 	endif
@@ -768,8 +768,8 @@ PROCEDURE ProcSaveLink
 			StrToFile(updt_status,my_folderLog+my_ftstamp+"-Erro_updt_status.txt",4)
 		else	
 			u_sqlexec([ROLLBACK])
-			msg("Erro - updt_linkpdf - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
-Gowww("https://www.grincop.pt/contactos/")
+			msg("Erro - updt_linkpdf - p.f. contacte o seu Administrador de Sistema jm!!")
+Gowww("htt")
 			exit
 		endif
 	endif
