@@ -1,11 +1,10 @@
 *================================================================================================================================================
-* GRINCOP LDA
-*      :: Data Criação:    30/06/2021
-*      :: Programador:     João Mendes
-*      :: Cliente:     AMBIENTI D INTERNI
-*      :: Objetivo:    Receber Link dos pdfs já assinados    
-* Histórico de Versões
-*      :: 06/07/2021 »» JM :: Retirada mensagem de ajuda ao desenvolvimento, timeout na msg com o status
+
+*      :: Data CriaÃ§Ã£o:    30/06/2021
+*      :: Programador:     jemptygrc
+*      :: Objetivo:    Receber Link dos pdfs jÃ¡ assinados    
+* HistÃ³rico de VersÃµes
+*      :: 06/07/2021 Â»Â» JM :: Retirada mensagem de ajuda ao desenvolvimento, timeout na msg com o status
 *================================================================================================================================================
 
 
@@ -13,7 +12,7 @@
 *https://dcn-solution.saphety.com/Dcn.Sandbox.Client/assets/api-docs/notebooks/get-document-formats.html#get-invoice-pdf-or-ubl-from-archive
 
 if !pergunta("Pretende receber o ficheiro PDF",1,"Este processo pode demorar algum tempo",.T.)
-	msg("Operaçãoo cancelada","WAIT")
+	msg("OperaÃ§Ã£oo cancelada","WAIT")
 	return
 endif
 ************************************************************************************************
@@ -25,8 +24,8 @@ LOCAL my_token
 *Parametros JSON para envio paraAPI
 TEXT TO mJSON TEXTMERGE NOSHOW
 {
-		"username": "geral@adinterni.com",
-		"password": "Ambientifact2021*"
+		"username": "geral@alguem.com",
+		"password": "Password*"
 }
 ENDTEXT
 
@@ -39,7 +38,7 @@ loHTTP3.Open("POST", mBaseURL)
 *Headers da chamada
 loHTTP3.SetRequestHeader("content-type", "application/json")
 
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 *loHTTP3.SetRequestHeader("Authorization","Basic OWYwODBhY2ItYmIzMC00Y2ZhLWE4YjQtODU4ZjFmZjk3NDYzOmgjQlNhWg==")
 loHTTP3.Send(mJSON)
 
@@ -77,13 +76,13 @@ loHTTP3 = CREATEOBJECT("WinHttp.WinHttpRequest.5.1")
 loHTTP3.Open("POST", service_url)
 *Headers da chamada
 loHTTP3.SetRequestHeader("content-type", "application/json")
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 loHTTP3.SetRequestHeader("Authorization","bearer " + my_token)
 *msg(payload)
 loHTTP3.Send(payload)
 ***************
 loHTTP3.Open("GET", service_url)
-*Caso necessite de alguma autenticação, incluir o Header abaixo com os dados da autenticação
+*Caso necessite de alguma autenticaÃ§Ã£o, incluir o Header abaixo com os dados da autenticaÃ§Ã£o
 loHTTP3.SetRequestHeader("Authorization","bearer "+my_token)
 loHTTP3.Send(payload)
 WAIT WINDOW loHTTP3.status TIMEOUT 5
@@ -104,6 +103,6 @@ tamStrg=len(xpos)
 ***Subtrai ao valor total da string menos o "} (2 caracteres)
 my_url=SUBSTR(xpos,1,tamStrg-4)
 *messagebox("ola my_url")
-messagebox("Pode fazer o download do PDF através do link apresentado na seguinte mensagem","GRINCOP")
+messagebox("Pode fazer o download do PDF atravÃ©s do link apresentado na seguinte mensagem","GRINCOP")
 msg(my_url)
-msg("Operação concluida","WAIT")
+msg("OperaÃ§Ã£o concluida","WAIT")
