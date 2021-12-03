@@ -1,17 +1,17 @@
 *================================================================================================================================================
-* GRINCOP LDA
-*      :: Data CriaÁ„o:    30/06/2021
-*      :: Programador:     Jo„o Mendes
-*      :: Cliente:     AMBIENTI D INTERNI
+* 
+*      :: Data Cria√ß√£o:    30/06/2021
+*      :: Programador:     
+*      :: Cliente:     
 *      :: Objetivo:    Verifica estado do XML assinado eletronicamente    
-* HistÛrico de Versıes
-*      :: 16/07/2021 ªª JM :: Registo de log
+* Hist√≥rico de Vers√µes
+*      :: 16/07/2021 ¬ª¬ª JM :: Registo de log
 *================================================================================================================================================
 
 *!* Definir qual a pasta no servidor *!*
 LOCAL my_folder
 my_folder=""
-my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LXML\"
+my_folder=""
 
 ************************************************************************************************
 
@@ -19,7 +19,7 @@ my_folder="\\192.168.0.11\Dropbox\Dados\FEAP\Log\LXML\"
 *CHECK INVOICE STATUS PRODUCAO
 *https://dcn-solution.saphety.com/Dcn.Sandbox.Client/assets/api-docs/notebooks/get-document.html
 if !pergunta("Pretende verificar o estado do XML?",1,"Este processo pode demorar algum tempo",.T.)
-	msg("OperaÁ„o cancelada","WAIT")
+	msg("Opera√ß√£o cancelada","WAIT")
 	return
 endif
 ************************************************************************************************
@@ -29,11 +29,11 @@ LOCAL my_response
 LOCAL xpos
 LOCAL my_token
 
-*Parametros JSON para envio ‡ API
+*Parametros JSON para envio √† API
 TEXT TO mJSON TEXTMERGE NOSHOW
 {
-	"username": "geral@adinterni.com",
-	"password": "Ambientifact2021*"
+	"username": "",
+	"password": ""
 }
 ENDTEXT
 
@@ -75,7 +75,7 @@ numFact=astr(ft.Fno)
 SELECT ft3
 LOCAL my_outbound
 my_outbound=alltrim(ft3.u_OUTBOUND)
-*Parametros JSON para envio ‡ API
+*Parametros JSON para envio √† API
 TEXT TO payload TEXTMERGE NOSHOW
 {
 	"ServerBaseUrl": "https://dcn-solution.saphety.com/Dcn.Business.WebApi"
@@ -95,7 +95,7 @@ loHTTP3.Open("POST", service_url)
 *Headers da chamada
 loHTTP3.SetRequestHeader("content-type", "application/json")
 
-*Caso necessite de alguma autenticaÁ„o, incluir o Header abaixo com os dados da autenticaÁ„o
+*Caso necessite de alguma autentica√ß√£o, incluir o Header abaixo com os dados da autentica√ß√£o
 loHTTP3.SetRequestHeader("Authorization","bearer " + my_token)
 
 *msg(payload)
@@ -109,7 +109,7 @@ loHTTP3.Send(payload)
 loHTTP3.Open("GET", service_url)
 *Headers da chamada
 *loHTTP3.SetRequestHeader("content-type", "application/json")
-*Caso necessite de alguma autenticaÁ„o, incluir o Header abaixo com os dados da autenticaÁ„o
+*Caso necessite de alguma autentica√ß√£o, incluir o Header abaixo com os dados da autentica√ß√£o
 loHTTP3.SetRequestHeader("Authorization","bearer "+my_token)
 *loHTTP3.Send(mJSONoutbound)
 loHTTP3.Send(payload)
@@ -173,7 +173,7 @@ IF isValid="false"
 	SELECT curs_err1
 		GO TOP
 		Append Blank
-		Replace curs_err1.nome with "Erro n∫1"
+		Replace curs_err1.nome with "Erro n¬∫1"
 		Replace curs_err1.ErrorCode with alltrim(my_errorCode)
 
 	LOCAL i
@@ -189,7 +189,7 @@ IF isValid="false"
 	list_ronly(i)=.t.
 	list_combo(i)=""
 	i=i+1
-	list_tit(i) = "DescriÁ„o do Erro"
+	list_tit(i) = "Descri√ß√£o do Erro"
 	list_cam(i) = "curs_err1.errorCode"
 	list_pic(i) = ""
 	list_ali(i) = 0
@@ -207,19 +207,19 @@ IF isValid="false"
 	*********************************************************************
 	DO CASE
 	CASE my_errorCode = "INVALID_INTL_VAT_CODE"
-		msg("NIF inv·lido na fatura: "+chr(13)+chr(10)+"Por favor verifique se o cliente: tem o NIF bem preenchido (Ex: PT123456789)","FORM")
+		msg("NIF inv√°lido na fatura: "+chr(13)+chr(10)+"Por favor verifique se o cliente: tem o NIF bem preenchido (Ex: PT123456789)","FORM")
 		return
 	CASE my_errorCode = "DATETIME_FORMAT_EXPECTED"
-		msg("DATA inv·lida na fatura: "+chr(13)+chr(10)+"Por favor abra o ˙ltimo registo no ecr„ das faturas","FORM")
+		msg("DATA inv√°lida na fatura: "+chr(13)+chr(10)+"Por favor abra o √∫ltimo registo no ecr√£ das faturas","FORM")
 	CASE my_errorCode = "OUTBOUND_FINANCIAL_DOCUMENT_ALREADY_SENT"
-		msg("A fatura : j· foi enviada e n„o pode ser enviada novamente","FORM")
+		msg("A fatura : j√° foi enviada e n√£o pode ser enviada novamente","FORM")
 		return
 	CASE my_errorCode = "EXPECTED_DATA_NOT_FOUND"
 		msg(" ERRO EM ANALISE GRINCOP","FORM")
 		return	
 	OTHERWISE
-		msg("Erro desconhecido! Por favor contate o administrador de sistema GRINCOP")
-		Gowww("https://www.grincop.pt/contactos/")
+		msg("Erro desconhecido! Por favor contate o administrador de sistema jm")
+		Gowww("")
 	ENDCASE
 RETURN
 ENDIF
@@ -228,22 +228,22 @@ ENDIF
 
 ***************************************************************************************
 ***************************************************************************************
-***************************CONDI«’ES DO ESTADO DE INTEGRA«√O***************************
+***************************CONDI√á√ïES DO ESTADO DE INTEGRA√á√ÉO***************************
 DO CASE
 CASE (my_integration="Sent")
-	messagebox("O documento foi enviado","GRINCOP")
+	messagebox("O documento foi enviado","jm")
 CASE (my_integration="Paid")
-	messagebox("O documento est· pago","GRINCOP")
+	messagebox("O documento est√° pago","jm")
 CASE (my_integration="Error")
-	messagebox("O documento tem erros","GRINCOP")
+	messagebox("O documento tem erros","jm")
 CASE (my_integration="Not_Sent")
-	messagebox("O documento n„o foi enviado","GRINCOP")
+	messagebox("O documento n√£o foi enviado","jm")
 CASE (my_integration="NotIntegrated")
-	messagebox("O documento n„o est· integrado","GRINCOP")
+	messagebox("O documento n√£o est√° integrado","jm")
 CASE (my_integration="Rejected")
-	messagebox("O documento foi rejeitado","GRINCOP")
+	messagebox("O documento foi rejeitado","jm")
 OTHERWISE
-	messagebox("Erro desconhecido","GRINCOP")
+	messagebox("Erro desconhecido","jm")
 ENDCASE
 
 
