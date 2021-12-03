@@ -1,5 +1,5 @@
 ***TITULO: ENVIAR XML
-***CLIENTE: AMBIENTI
+***CLIENTE: 
 ***DATA: 15/06/2021
 ***ULTIMA ALTERACAO: 01/07/2021
 *************************************************************************************************
@@ -27,7 +27,7 @@ nomeCliente=""
 nomeDoc=""
 LOCAL nifEmpresa
 nifEmpresa=""
-nifEmpresa="PT508369444"
+nifEmpresa="PTxxx"
 *SELECT factFe
 SELECT FT
 SELECT FT3
@@ -104,8 +104,8 @@ RETURN
 	*Parametros JSON para envio à  API
 	TEXT TO mJSON TEXTMERGE NOSHOW
 	{
-		"username": "geral@adinterni.com",
-		"password": "Ambientifact2021*"
+		"username": "geral@alguem.pt",
+		"password": "Password*"
 	}
 	ENDTEXT
 	*!* URL da API SANDBOX
@@ -380,8 +380,8 @@ PROCEDURE ProcSaveOutbound
 			u_sqlexec([COMMIT TRANSACTION])
 		else	
 			u_sqlexec([ROLLBACK])
-			Messagebox("Erro - updt_out - p.f. contacte o seu Administrador de Sistema GRINCOP!!")
-			Gowww("https://www.grincop.pt/contactos/")
+			Messagebox("Erro - updt_out - p.f. contacte o seu Administrador de Sistema jm!!")
+			Gowww("")
 			exit
 		endif
 	endif
@@ -437,6 +437,6 @@ DO CASE
 	CASE empty(errorCode)
 		msg("Sem erros! Em processamento...","TRADUZIR")
 OTHERWISE
-		msg("Erro desconhecido! Por favor contacte o administrador de sistema GRINCOP com a seguinte informação: "+chr(13)+chr(10)+chr(13)+chr(10)+errorCode)
-		Gowww("https://www.grincop.pt/contactos/")
+		msg("Erro desconhecido! Por favor contacte o administrador de sistema jm com a seguinte informação: "+chr(13)+chr(10)+chr(13)+chr(10)+errorCode)
+		Gowww("")
 ENDCASE
